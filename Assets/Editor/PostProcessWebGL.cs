@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR && UNITY_WEBGL
+#if UNITY_EDITOR && UNITY_WEBGL
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.Callbacks;

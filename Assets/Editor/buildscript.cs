@@ -11,18 +11,32 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
-public class buildscript{
+using UnityEditor.Build.Reporting;
+using UnityEngine;
+public class Buildscript : MonoBehaviour {
 
-	static void build(){
-		string[] scene = { 
-			"Assets/Visualiser/Scenes/Landing Page.unity", 
-			"Assets/Visualiser/Scenes/Start.unity",
-			"Assets/Visualiser/Scenes/Visualisation.unity",
-			"Assets/Visualiser/Scenes/NetworkError.unity"
-		};
-		string path = "buildweb/";
-		BuildPipeline.BuildPlayer (scene, path, BuildTarget.WebGL, BuildOptions.None);
-	}
+  static void Build () {
+    BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions ();
+    buildPlayerOptions.scenes = new [] {
+      "Assets/Visualiser/Scenes/Landing Page.unity",
+      "Assets/Visualiser/Scenes/Start.unity",
+      "Assets/Visualiser/Scenes/Visualisation.unity",
+      "Assets/Visualiser/Scenes/NetworkError.unity"
+    };
+    buildPlayerOptions.locationPathName = "build";
+    buildPlayerOptions.target = BuildTarget.WebGL;
+    buildPlayerOptions.options = BuildOptions.None;
+
+    BuildReport report = BuildPipeline.BuildPlayer (buildPlayerOptions);
+    BuildSummary summary = report.summary;
+
+    if (summary.result == BuildResult.Succeeded) {
+      Debug.Log ("Build succeeded: " + summary.totalSize + " bytes");
+    }
+
+    if (summary.result == BuildResult.Failed) {
+      Debug.Log ("Build failed");
+    }
+  }
 }
