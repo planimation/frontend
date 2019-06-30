@@ -1,110 +1,67 @@
-# 1. Overview 
+# Planimation Frontend
 
-This document contains an overview of Planning Visualiser.
+Latest Development Build Status
 
-The Planning Visualiser is an open-source program which visualises solutions to Planning Problems. It is an executable Unity architecture in a browser.
-
-Click the `Help` link from inside the visualiser. Alternatively, view the html for the user manual at `server/UserManual.html`.
+[![Build Status](https://travis-ci.org/planimation/backend.svg?branch=develop)](https://travis-ci.org/planimation/frontend)
 
 
-For developer documentation, see
-* `/Docs/Animation Profile Guide.md`
-	* Contains a guide to Animation Profiles and the Animation Profile Language
-* `/VFG Guide.md`
-	* Contains a guide to the Visualisation File Generator Component
-* `/Docs/Visualiser Guide.md`
-	* Contains a guide to the VisualiserComponent 
+## Docker Build
 
+- Install Docker
+- Copy license file to the root of frontend directory
 
-## 1.1 Planning Problems
+	```
+	export IMAGE_TAG=planimation-frontend:latest
+	export UNITY_LICENSE=LICENSE_FILE=Unity_lic.ulf
+	docker build --no-cache -t ${IMAGE_TAG} --build-arg LICENSE_FILE=${LICENSE_FILE} -f docker/release/Dockerfile .
+	docker run -d -p 8080:80 ${IMAGE_TAG}
+	docker ps
+	```
 
-For information about Planning Problems, see http://planning.domains/
+- Test the web server is running by visiting `localhost:8080` in the browser.
 
+## Contribution
 
-Our application uses one 'Animation Profile' per problem domain. An Animation Profile is a user-written PDDL file which tells the Visualiser how a Domain is to be visualised. See section 3.2 for more information on Animation Profiles.
+When contributing to this repository, please adhere to the below guidelines.
 
+### Create an issue
 
-## 1.2 Scope
-Planning Visualiser currently has Animation Profiles for four problem domains; Blocks, Grid, Towers of Hanoi, and Logistics. Other simple problem domains may be added by writing an Animation Profile (see section 3.2).
+- Before pushing code to the repo, it is required to [create an issue](https://github.com/planimation/backend/issues) along with a brief description so that peer developers can review, provide suggestions and feedback.
+- Create a new issue to obtain `ISSUE_NO`.
 
+### Pre-push changes
 
-Planning visualiser can generate a solution using the solver on http://planning.domains/ . Alternatively, the user can provide their own solution from any solver, provided it conforms to the correct format.
+Before pushing the code to repo please make sure to:
 
+1. Update the `README.md` with details of changes to the interface, this includes the new environment 
+   variables, exposed ports, useful file locations and container parameters, if any.
+2. Increase the version numbers in any examples files and the README.md to the new version if any. 
+3. The version number scheme, we follow [SemVer](http://semver.org/).
 
+### Commit message format
 
-# 2. Getting Started
+- Set the commit template as follows:
+    ```
+    git config user.name "Your Full Name"
+    git config user.name "Your GitHut email"
+    git config commit.template .gitmessage
+    ```
+- Commit message should be of the following format `[ISSUE_NO] COMMIT_MESSAGE`. Refer [`.gitmessage`](.gitmessage). Example:
+    ```
+    [10] Fix security issue related with form
+    
+    * Updated lib dependency version
+    * Fixed something
+    * Fixed other thing
+    
+    Resolves #10
+    ```
 
+### Pull Request and peer code review process
 
-## 2.1 In-browser (recommended)
+**Please note that you cannot push directly to `develop` nor `master` branches.**
 
-1. Visit http://planimation.planning.domains
-
-
-## 2.2 Local server (For Development)
-
-### 2.2.1 Install dependencies
-1. **Unity** - Install the Version 2018.2.1f1  from https://unity3d.com/. When installing, select "Include WebGL"
-2. **Django REST** - Follow the tutorial at http://www.django-rest-framework.org/tutorial/quickstart/
-
-### 2.2.2 Install project
-1. Clone the project from https://github.com/Planning-Visualisation/planning-visualisation
-
-
-### 2.2.3 Run
-1. Run the server with the command 'python manage.py runserver' in the directory of the file manage.py (/swen90013-2018-pl/server)
-2. Open the project in Unity.The Unity application will communicate with the local server
-
-
-## 2.3 Deployment (For Development)
-
-1. Follow the steps to setup the local server in 2.2
-2. Build the project from the File menu in Unity
-3. Be sure to include all scenes in the build
-
-
-# 3. Using the system
-
-
-Click the `Help` link from inside the visualiser. Alternatively, view the html for the user manual at `server/UserManual.html`.
-
-
-# 4. Extending the system
-
-
-Planning Visualiser is modular and can be extended in multiple ways.
-
-Many simple domains can be captured in the existing Animation Profile language. For more complex domains, modifications may need to be made to the application. These are detailed in 4.3. and 4.4
-
-
-## 4.2 Architecture overview
-
-### Simple Overview
-
-
-![Overview](https://raw.githubusercontent.com/Planning-Visualisation/planning-visualisation/master/Docs/images/readme/architecture%20overview.png)
-
-
-
-
-### Detailed Overview
-
-
-
-![Overview](https://raw.githubusercontent.com/Planning-Visualisation/planning-visualisation/master/Docs/images/vfg/vfg_overview.png)
-
-## 4.3 Extending the Visualisation File Generator
-The Visualisation File Generator (VFG) decides where objects are on the screen and what they look like, based on the three files listed above.
-
-Most domain-related modifications to the system should be made to the VFG. For example, a new domain might require objects to be laid out in a manner which is not captured in the existing Animation Profile language.
-
-Extending the Visualisation File Generator requires only building the project in Django (see section 2.2). 
-
-
-Modifications or extensions of the VFG need only be carried out only on the Django server (not Unity). For information on the VFG, see the file 'VFG Documentation'.
-
-
-## 4.4 Extending the Visualiser
-Modifying the visualiser is only required when the current visualiser cannot adequately render the domain on-screen. It does not concern the logic of object layout. For example, a user might want to extend the Visualiser to support animated sprites.
-
-
-Extending the Visualiser requires building the project in Unity and Django (see section 2.2). Modifications or extensions of the Visualiser need only be carried out on Unity (not Django). For information on the Visualiser, see the file 'Visualiser Documentation'.
+- Create a new branch and push the changes to this branch.
+- Create a PR and add at least one peer reviewer.
+- You may merge your branch to `develop` once your PR is approved by your peer reviewer.
+- If you do not have permission to merge the PR, please contact the reviewer to merge it for you.
