@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:18.04
 
 ARG COMPONENTS=Unity,WebGL
 ARG DOWNLOAD_URL=https://beta.unity3d.com/download/dad990bf2728/UnitySetup-2018.2.7f1
@@ -6,7 +6,7 @@ ARG DOWNLOAD_URL=https://beta.unity3d.com/download/dad990bf2728/UnitySetup-2018.
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 
-RUN echo "Australia/Melbourne" > /etc/timezone && \
+RUN echo "UTC" > /etc/timezone && \
     apt-get -qq update && apt-get -qq install -y \
     wget git x11vnc xvfb libgtk-3-0 libgtk-3-dev \
     imagemagick curl gconf-service lib32gcc1 \

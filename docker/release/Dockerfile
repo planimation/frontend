@@ -1,4 +1,4 @@
-FROM rakeshchoyal92/unity3d:2018 As builder
+FROM planimation/unity3d:2018.2.7f1 As builder
 
 ENV UNITY_PATH='/opt/Unity/Editor/Unity'
 
