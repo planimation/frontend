@@ -1,0 +1,18 @@
+language: python
+python: "3.6"
+env:
+  global:
+    - BACKEND_PATH=$TRAVIS_BUILD_DIR
+    - DOCKER_PATH=$TRAVIS_BUILD_DIR/docker/release/Dockerfile
+    - IMAGE_TAG=planimation/frontend:latest
+services:
+  - docker
+jobs:
+  include:
+    - stage: "Build docker image"
+      if: branch = develop
+      script: 
+        - ls -a
+        - docker build -t $IMAGE_TAG --build-arg LICENSE_FILE=Unity_lic.ulf -f $DOCKER_PATH $BACKEND_PATH
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+        - docker push $IMAGE_TAG
