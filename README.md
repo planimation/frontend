@@ -26,7 +26,7 @@ When contributing to this repository, please adhere to the below guidelines.
 
 ### Create an issue
 
-- Before pushing code to the repo, it is required to [create an issue](https://github.com/planimation/backend/issues) along with a brief description so that peer developers can review, provide suggestions and feedback.
+- Before pushing code to the repo, it is required to [create an issue](https://github.com/planimation/frontend/issues) along with a brief description so that peer developers can review, provide suggestions and feedback.
 - Create a new issue to obtain `ISSUE_NO`.
 
 ### Pre-push changes
