@@ -29,7 +29,7 @@ public class Buildscript : MonoBehaviour {
     buildPlayerOptions.locationPathName = "build";
     buildPlayerOptions.target = BuildTarget.WebGL;
     buildPlayerOptions.options = BuildOptions.None;
-
+    PlayerSettings.WebGL.template = "Assets/WebGLTemplates/Planimation";
     BuildReport report = BuildPipeline.BuildPlayer (buildPlayerOptions);
     BuildSummary summary = report.summary;
 
