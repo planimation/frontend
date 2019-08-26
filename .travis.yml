@@ -4,7 +4,7 @@ env:
   global:
   - FRONTEND_PATH=$TRAVIS_BUILD_DIR
   - DOCKER_PATH=$TRAVIS_BUILD_DIR/docker/release/Dockerfile
-  - IMAGE_TAG=planimation/frontend:latest
+  - IMAGE_TAG=rakeshchoyal92/frontend:latest
 services:
 - docker
 jobs:
