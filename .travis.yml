@@ -12,6 +12,7 @@ jobs:
   - stage: Build docker image
     if: branch = develop
     script:
+    - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/run_on_pull_requests; fi'
     - docker build -t $IMAGE_TAG --build-arg LICENSE_FILE=Unity_lic.ulf -f $DOCKER_PATH
       $FRONTEND_PATH
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
