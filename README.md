@@ -1,6 +1,6 @@
 # Planimation Frontend
 
-Latest Development Build Status, Build on 26 August
+Latest Development Build Status, Build on 27 August
 
 [![Build Status](https://travis-ci.org/planimation/backend.svg?branch=develop)](https://travis-ci.org/planimation/frontend)
 
