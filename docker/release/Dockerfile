@@ -1,4 +1,4 @@
-FROM planimation/unity3d:2018.2.7f1 As builder
+FROM gableroux/unity3d:2018.2.7f1 As builder
 
 ENV UNITY_PATH='/opt/Unity/Editor/Unity'
 
@@ -14,5 +14,5 @@ COPY . .
 COPY ${LICENSE_FILE} /root/.local/share/unity3d/Unity/Unity_lic.ulf
 RUN ${UNITY_PATH} ${UNITY_ARGS} ${PROJECT_PATH} -executeMethod ${BUILD_SCRIPT} -logFile
 
-FROM nginx 
+FROM nginx
 COPY --from=builder /root/project/build /usr/share/nginx/html
