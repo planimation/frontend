@@ -24,7 +24,7 @@ using System.Linq;
 public class PostProcessWebGL
 {
 //The name of the WebGLTemplate. Location in project should be Assets/WebGLTemplates/<YOUR TEMPLATE NAME>
-const string __TemplateToUse = "Planimation";
+const string __TemplateToUse = "NewTemplate";
 
 [PostProcessBuild]
 public static void ChangeWebGLTemplate(BuildTarget buildTarget, string pathToBuiltProject)
