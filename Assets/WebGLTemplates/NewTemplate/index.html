@@ -17,6 +17,85 @@
       body { margin: 0; }
       #gameContainer { width: 100vw; height: 100vh; }
       canvas { width: 100%; height: 100%; }
+
+      .modal-wrapper {
+        z-index: 999;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 60px 10px;
+        text-align: center
+      }
+
+      .modal-wrapper:not(:target) {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .3s, visibility .3s;
+      }
+
+      .modal-wrapper:target {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity .4s, visibility .4s;
+      }
+
+      .modal-wrapper::after {
+        display: inline-block;
+        height: 100%;
+        margin-left: -.05em;
+        vertical-align: middle;
+        content: ""
+      }
+
+      .modal-wrapper .modal-window {
+        box-sizing: border-box;
+        display: inline-block;
+        z-index: 20;
+        position: relative;
+        width: 70%;
+        max-width: 600px;
+        padding: 30px 30px 15px;
+        border-radius: 2px;
+        background: #fff;
+        box-shadow: 0 0 30px rgba(0, 0, 0, .6);
+        vertical-align: middle
+      }
+
+      .modal-wrapper .modal-window .modal-content {
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .modal-overlay {
+        z-index: 10;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(0, 0, 0, .8)
+      }
+
+      .modal-wrapper .modal-close {
+        z-index: 20;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 35px;
+        color: #95979c !important;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 35px;
+        text-align: center;
+        text-decoration: none;
+        text-indent: 0
+      }
+
+      .modal-wrapper .modal-close:hover {
+        color: #2b2e38 !important
+      }
     </style>
     <script src="Build/UnityLoader.js"></script>
     <script>
@@ -35,8 +114,8 @@
     }
 
     var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%",{onProgress: UnityProgress});
-	
-	function solve(){
+  
+  function solve(){
       gameInstance.SendMessage("Coordinator","planimationPlugin");
       gameInstance.SendMessage("Coordinator","setDomain",domText);
       gameInstance.SendMessage("Coordinator","setProblem",probText);
@@ -47,21 +126,80 @@
     }
 
      window.addEventListener('message',function(event) {
-       if (event.data.domText){
-                       
-        domText=event.data.domText;
-        probText=event.data.probText;
-        animateText=event.data.animateText;
-        planText=event.data.planText;
-        solverURL=event.data.solverURL;
-        solve();
-  }
-},false);
+       if (event.data.domText){           
+          domText=event.data.domText;
+          probText=event.data.probText;
+          animateText=event.data.animateText;
+          planText=event.data.planText;
+          solverURL=event.data.solverURL;
+          solve();
+      }
+     },false);
     </script>
   </head>
 
   <body>
     <div id="gameContainer"></div>
+    <a href="#modal-01" id="modal-open"></a>
+    <div class="modal-wrapper" id="modal-01">
+      <a href="#!" class="modal-overlay"></a>
+      <div class="modal-window">
+        <div class="modal-content">
+          <button id="domain">Domain</button>
+          <button id="problem">Problem</button>
+          <button id="animation">Animation Profile</button>
+        </div>
+        <a href="#!" class="modal-close" id="modal-close">×</a>
+      </div>
+    </div>
   </body>
+<script type="text/javascript">
+  /* (Apr 23, 2020) Drag and Drop update */
+  // prevents default before dropping item
+  var file;
+  document.addEventListener("dragover", function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  document.addEventListener("drop", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    file = e.dataTransfer.files[0];
+    var open = document.getElementById("modal-open");
+    open.click();
+  });
+  var close = document.getElementById("modal-close");
+  var domain = document.getElementById("domain");
+  domain.addEventListener("click", function(e) {
+    close.click();
+    send("Domain");
+  });
+  var problem = document.getElementById("problem");
+  problem.addEventListener("click", function(e) {
+    close.click();
+    send("Problem");
+  });
+  var animation = document.getElementById("animation");
+  animation.addEventListener("click", function(e) {
+    close.click();
+    send("Animation");
+  });
 
+  function send(type) {
+    var reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = function () {
+      var json = {
+        "name": file.name,
+        "data": reader.result,
+        "type": type
+      };
+
+      gameInstance.SendMessage("DomainButton", "DropFile", JSON.stringify(json));  
+      console.log(reader.result);
+    }
+  }
+
+  /* (Apr 23, 2020) Drag and Drop update */
+</script>
 </html>

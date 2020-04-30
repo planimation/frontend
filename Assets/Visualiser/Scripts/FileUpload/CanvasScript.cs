@@ -135,4 +135,67 @@ public class CanvasScript : MonoBehaviour
         }
 #endif
     }
+
+    /* (Apr 23, 2020) Drag and Drop update */
+    // accept dropped files
+    public void DropFile(string json)
+    {
+        var file = FileData.CreateFromJSON(json);
+
+        this.type = file.type;
+        textfield = GameObject.Find(type + "Text").GetComponent<InputField>();
+        textfield.text = file.name;
+        string data = file.data;
+        //Assigning file to corresponding variable and showing file name on UI
+
+        if (type == "Domain")
+        {
+            ScenesCoordinator.Coordinator.setDomain(data);
+
+        }
+        else if (type == "Problem")
+        {
+            ScenesCoordinator.Coordinator.setProblem(data);
+
+        }
+        else if (type == "Animation")
+        {
+            ScenesCoordinator.Coordinator.setAnimation(data);
+
+        }else if (type == "Plan")
+        {
+            ScenesCoordinator.Coordinator.setPlan(data);
+
+        }
+        else if (type == "visualisationFile")
+        {
+            ScenesCoordinator.Coordinator.PushParameters("Visualisation", data);
+
+        }
+
+        if (type == "Animation"){
+            UploaderCaptureClick(".pddl");
+        } else if (type == "visualisationFile"){
+            UploaderCaptureClick(".vfg");
+        } else if (type=="Plan"){
+            UploaderCaptureClick(".txt,.pddl");
+        }else {
+            UploaderCaptureClick(".pddl");
+        }
+
+    }
+
+    [System.Serializable]
+    public class FileData
+    {
+        public string name;
+        public string type;
+        public string data;
+
+        public static FileData CreateFromJSON(string jsonString)
+        {
+            return JsonUtility.FromJson<FileData>(jsonString);
+        }
+    }
+    /* (Apr 23, 2020) Drag and Drop update */
 }
