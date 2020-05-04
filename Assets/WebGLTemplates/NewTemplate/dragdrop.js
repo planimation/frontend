@@ -51,11 +51,21 @@ function uploadPDDLFile() {
     uploadMultipleFiles();
   // when a single file is dropped
   } else {
+    var regexp = /(\.|\/)pddl$/;
+    if(!planimation_dragdrop.files[0].name.match(regexp)) {
+      alert("Please put in pddl files!");
+      return;
+    }
     uploadSingleFile();
   }
 }
 
 function uploadVFGFile() {
+  var regexp = /(\.|\/)vfg$/;
+  if(!planimation_dragdrop.files[0].name.match(regexp)) {
+    alert("Please put in vfg files!");
+    return;
+  }
   // take the first file and upload it
   uploadSingleFile();
 }
@@ -63,17 +73,27 @@ function uploadVFGFile() {
 function uploadSingleFile() {
   var offsetX = planimation_dragdrop.offsetX;
   var offsetY = planimation_dragdrop.offsetY;
-  fileLoaderSingle(planimation_dragdrop.files[0], offsetX, window.innerHeight - offsetY);  
+  fileLoaderSingle(planimation_dragdrop.files[0], offsetX, window.innerHeight - offsetY);
 }
 
 function uploadMultipleFiles() {
   var open = document.getElementById("modal-open");
   var typeModal = document.getElementById("file-type");
   typeModal.innerHTML = "";
+  var regexp = /(\.|\/)pddl$/;
+  var fileIndex = 1;
   for(var i = 0; i < planimation_dragdrop.files.length; i++) {
-    typeModal.appendChild(createFileDiv(planimation_dragdrop.files[i], i));
+    if(!planimation_dragdrop.files[i].name.match(regexp)) {
+      alert("[Invalid file: " + planimation_dragdrop.files[i].name + " ] " + "Please put in pddl files!");
+    } else {
+      typeModal.appendChild(createFileDiv(planimation_dragdrop.files[i], fileIndex));
+      fileIndex++;
+    }
   }
-  open.click();
+
+  if(typeModal.hasChildNodes()) {
+    open.click();
+  }
 }
 
 function fileLoaderSingle(file, x, y) {
@@ -88,6 +108,7 @@ function fileLoaderSingle(file, x, y) {
     };
     gameInstance.SendMessage("Canvas", "DropSingleFile", JSON.stringify(json));
   });
+  planimation_dragdrop = {};
 }
 
 // loads file data
@@ -158,5 +179,5 @@ function createFileDiv(file, index) {
   divFileType.appendChild(buttonAnimation);
   divFileName.appendChild(divFileType);
   return divFileName;
-}
+} 
 /** (Apr 23, 2020) Drag and Drop update **/
