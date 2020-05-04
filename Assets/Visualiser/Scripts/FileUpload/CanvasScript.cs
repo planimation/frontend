@@ -18,9 +18,11 @@ using UnityEngine.SceneManagement;
 using System.Runtime.InteropServices;
 using UnityEngine.UI;
 
+/* (Apr 23, 2020) Drag and Drop update */
 using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
+/** (Apr 23, 2020) Drag and Drop update **/
 
 // Script for Opening file panel and read file in built using the Java script plugin.
 public class CanvasScript : MonoBehaviour
@@ -31,11 +33,14 @@ public class CanvasScript : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void PasteHereWindow();
 
+    /* (Apr 23, 2020) Drag and Drop update */
+    // call javascript function through WebGL
     [DllImport("__Internal")]
     private static extern void UploadPDDLFile();
 
     [DllImport("__Internal")]
     private static extern void UploadVFGFile();
+    /** (Apr 23, 2020) Drag and Drop update **/
     
     InputField textfield;
     string type;
@@ -151,9 +156,10 @@ public class CanvasScript : MonoBehaviour
     const string PROBLEM = "Problem";
     const string ANIMATION = "Animation";
     const string VFG = "visualisationFile";
+    const string PLAN = "Plan";
     const string TEXT = "Text";
     const string BUTTON = "Button";
-
+    const string PARAM_VFG = "Visualisation";
 
     public void CheckCurrentScene() {
 
@@ -170,20 +176,17 @@ public class CanvasScript : MonoBehaviour
         }
     }
 
-    // accept dropped files
+    // set each file data
     public void DropMultipleFiles(string json)
     {
         var file = FileData.CreateFromJSON(json);
         this.type = file.type;
         
-        textfield = GameObject.Find(type + TEXT).GetComponent<InputField>();
-        textfield.text = file.name;
-        string data = file.data;
-
         //Assigning file to corresponding variable and showing file name on UI
-        setFileData(data);
+        setFileData(file);
     }
 
+    // detect dropped position and set file data
     public void DropSingleFile(string json)
     {
         var file = FileData.CreateFromJSON(json);
@@ -222,16 +225,16 @@ public class CanvasScript : MonoBehaviour
                 this.type = VFG;
             }
         }
+        
+        //Assigning file to corresponding variable and showing file name on UI
+        setFileData(file);
+    }
+
+    private void setFileData(FileData file) {
 
         textfield = GameObject.Find(type + TEXT).GetComponent<InputField>();
         textfield.text = file.name;
         string data = file.data;
-        
-        //Assigning file to corresponding variable and showing file name on UI
-        setFileData(data);
-    }
-
-    private void setFileData(string data) {
 
         if (type == DOMAIN)
         {
@@ -247,20 +250,21 @@ public class CanvasScript : MonoBehaviour
         {
             ScenesCoordinator.Coordinator.setAnimation(data);
 
-        }else if (type == "Plan")
+        }else if (type == PLAN)
         {
             ScenesCoordinator.Coordinator.setPlan(data);
 
         }
         else if (type == VFG)
         {
-            ScenesCoordinator.Coordinator.PushParameters("Visualisation", data);
+            ScenesCoordinator.Coordinator.PushParameters(PARAM_VFG, data);
 
         }
     }
 
+    // Custom object for json utility
     [System.Serializable]
-    public class FileData
+    private class FileData
     {
         public string name;
         public string type;
@@ -273,5 +277,5 @@ public class CanvasScript : MonoBehaviour
             return JsonUtility.FromJson<FileData>(jsonString);
         }
     }
-    /* (Apr 23, 2020) Drag and Drop update */
+    /** (Apr 23, 2020) Drag and Drop update **/
 }
