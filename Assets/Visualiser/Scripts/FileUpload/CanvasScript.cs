@@ -30,6 +30,12 @@ public class CanvasScript : MonoBehaviour
 
     [DllImport("__Internal")]
     private static extern void PasteHereWindow();
+
+    [DllImport("__Internal")]
+    private static extern void UploadPDDLFile();
+
+    [DllImport("__Internal")]
+    private static extern void UploadVFGFile();
     
     InputField textfield;
     string type;
@@ -141,13 +147,36 @@ public class CanvasScript : MonoBehaviour
     }
 
     /* (Apr 23, 2020) Drag and Drop update */
+    const string DOMAIN = "Domain";
+    const string PROBLEM = "Problem";
+    const string ANIMATION = "Animation";
+    const string VFG = "visualisationFile";
+    const string TEXT = "Text";
+    const string BUTTON = "Button";
+
+
+    public void CheckCurrentScene() {
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        
+        // upload page for Domain/Problem/AnimationProfile files
+        if(sceneName.Equals("Start")) {
+            UploadPDDLFile();
+        }
+        
+        // upload page for a VFG file
+        else if(sceneName.Equals("VFGUploader")) {
+            UploadVFGFile();
+        }
+    }
+
     // accept dropped files
     public void DropMultipleFiles(string json)
     {
         var file = FileData.CreateFromJSON(json);
         this.type = file.type;
         
-        textfield = GameObject.Find(type + "Text").GetComponent<InputField>();
+        textfield = GameObject.Find(type + TEXT).GetComponent<InputField>();
         textfield.text = file.name;
         string data = file.data;
 
@@ -157,7 +186,7 @@ public class CanvasScript : MonoBehaviour
 
     public void DropSingleFile(string json)
     {
-        var file = FileData.CreateFromJSON(json);;
+        var file = FileData.CreateFromJSON(json);
 
         /* [note]
          * mousePosition = camera/screen coordinate
@@ -182,19 +211,19 @@ public class CanvasScript : MonoBehaviour
         foreach (RaycastResult target in results)
         {
             Debug.Log(target.gameObject.name);
-            if(target.gameObject.name.Equals("DomainText") | target.gameObject.name.Equals("DomainButton")) {
-                this.type = "Domain";
-            } else if (target.gameObject.name.Equals("ProblemText") | target.gameObject.name.Equals("ProblemButton")) {
-                this.type = "Problem";
-            } else if (target.gameObject.name.Equals("AnimationText") | target.gameObject.name.Equals("AnimationButton")) {
-                this.type = "Animation";
+            if(target.gameObject.name.Equals(DOMAIN + TEXT) | target.gameObject.name.Equals(DOMAIN + BUTTON)) {
+                this.type = DOMAIN;
+            } else if (target.gameObject.name.Equals(PROBLEM + TEXT) | target.gameObject.name.Equals(PROBLEM + BUTTON)) {
+                this.type = PROBLEM;
+            } else if (target.gameObject.name.Equals(ANIMATION + TEXT) | target.gameObject.name.Equals(ANIMATION + BUTTON)) {
+                this.type = ANIMATION;
             // should change this component name to a unique one
             } else if (target.gameObject.name.Equals("UploadFields")) {
-                this.type = "visualisationFile";
+                this.type = VFG;
             }
         }
 
-        textfield = GameObject.Find(type + "Text").GetComponent<InputField>();
+        textfield = GameObject.Find(type + TEXT).GetComponent<InputField>();
         textfield.text = file.name;
         string data = file.data;
         
@@ -203,17 +232,18 @@ public class CanvasScript : MonoBehaviour
     }
 
     private void setFileData(string data) {
-        if (type == "Domain")
+
+        if (type == DOMAIN)
         {
             ScenesCoordinator.Coordinator.setDomain(data);
 
         }
-        else if (type == "Problem")
+        else if (type == PROBLEM)
         {
             ScenesCoordinator.Coordinator.setProblem(data);
 
         }
-        else if (type == "Animation")
+        else if (type == ANIMATION)
         {
             ScenesCoordinator.Coordinator.setAnimation(data);
 
@@ -222,20 +252,10 @@ public class CanvasScript : MonoBehaviour
             ScenesCoordinator.Coordinator.setPlan(data);
 
         }
-        else if (type == "visualisationFile")
+        else if (type == VFG)
         {
             ScenesCoordinator.Coordinator.PushParameters("Visualisation", data);
 
-        }
-
-        if (type == "Animation"){
-            UploaderCaptureClick(".pddl");
-        } else if (type == "visualisationFile"){
-            UploaderCaptureClick(".vfg");
-        } else if (type=="Plan"){
-            UploaderCaptureClick(".txt,.pddl");
-        }else {
-            UploaderCaptureClick(".pddl");
         }
     }
 
