@@ -17,97 +17,6 @@
       body { margin: 0; }
       #gameContainer { width: 100vw; height: 100vh; }
       canvas { width: 100%; height: 100%; }
-
-      .modal-wrapper {
-        z-index: 999;
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        padding: 60px 10px;
-        text-align: center
-      }
-
-      .modal-wrapper:not(:target) {
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity .3s, visibility .3s;
-      }
-
-      .modal-wrapper:target {
-        opacity: 1;
-        visibility: visible;
-        transition: opacity .4s, visibility .4s;
-      }
-
-      .modal-wrapper::after {
-        display: inline-block;
-        height: 100%;
-        margin-left: -.05em;
-        vertical-align: middle;
-        content: ""
-      }
-
-      .modal-wrapper .modal-window {
-        box-sizing: border-box;
-        display: inline-block;
-        z-index: 20;
-        position: relative;
-        width: 70%;
-        max-width: 600px;
-        padding: 30px 30px 15px;
-        border-radius: 2px;
-        background: #fff;
-        box-shadow: 0 0 30px rgba(0, 0, 0, .6);
-        vertical-align: middle
-      }
-
-      .modal-wrapper .modal-window .modal-content {
-        max-height: 80vh;
-        overflow-y: auto;
-      }
-
-      .modal-overlay {
-        z-index: 10;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        background: rgba(0, 0, 0, .8)
-      }
-
-      .modal-wrapper .modal-close {
-        z-index: 20;
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 35px;
-        color: #95979c !important;
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 35px;
-        text-align: center;
-        text-decoration: none;
-        text-indent: 0
-      }
-
-      .modal-wrapper .modal-close:hover {
-        color: #2b2e38 !important
-      }
-
-      .typeButton {
-        margin: 5px;
-        padding: 10px;
-        background-color: #9C9C9C;
-        border-radius: 2px;
-      }
-
-      .divFile {
-        margin: 5px;
-        padding: 10px;
-      }
     </style>
     <script src="Build/UnityLoader.js"></script>
     <script>
@@ -147,12 +56,16 @@
         }
       },false);
     </script>
+    <!-- (Apr 23, 2020) Drag and Drop update: added script -->
+    <script type="text/javascript" src="dragdrop.js"></script>
+    <link rel="stylesheet" type="text/css" href="dragdrop.css">
   </head>
 
   <body>
     <div id="gameContainer"></div>
     
-    <!-- for file type input -->
+    <!-- [start] (Apr 23, 2020) Drag and Drop update -->
+    <!-- modal section for file type input -->
     <a href="#modal-01" id="modal-open"></a>
     <div class="modal-wrapper" id="modal-01">
       <a href="#!" class="modal-overlay"></a>
@@ -166,158 +79,7 @@
         <a href="#!" class="modal-close" id="modal-close"></a>
       </div>
     </div>
-    <!-- for file type input -->
+    <!-- [end] (Apr 23, 2020) Drag and Drop update -->
   
   </body>
-  <script type="text/javascript">
-    /* (Apr 23, 2020) Drag and Drop update */
-    var planimation_dragdrop_files = [];
-    var offsetX;
-    var offsetY;
-    
-    // prevents default before dropping item
-    document.addEventListener("dragover", function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-    });
-    
-    // opens the modal window of type-select
-    document.addEventListener("drop", function (e) {
-      e.stopPropagation();
-      e.preventDefault();
-      planimation_dragdrop_files = e.dataTransfer.files;
-      offsetX = e.offsetX;
-      offsetY = e.offsetY;
-      // check the current Unity scene
-      gameInstance.SendMessage("Canvas", "CheckCurrentScene", "");  
-    });
-
-    function uploadPDDLFile() {
-      // open the modal window only when multiple files are dropped
-      if(planimation_dragdrop_files.length > 1) { 
-        var open = document.getElementById("modal-open");
-        var typeModal = document.getElementById("file-type");
-        typeModal.innerHTML = "";
-        for(var i = 0; i < planimation_dragdrop_files.length; i++) {
-          typeModal.appendChild(createFileDiv(planimation_dragdrop_files[i], i));
-        }
-        open.click();
-      // when a single file is dropped
-      } else {
-        fileLoaderSingle(planimation_dragdrop_files[0], offsetX, window.innerHeight - offsetY);  
-      }
-    }
-
-    function uploadVFGFile() {
-      // take the first file and upload it
-      fileLoaderSingle(planimation_dragdrop_files[0], offsetX, window.innerHeight - offsetY);  
-    }
-
-    // appends type-select menu on the modal window according to file(s)
-    function createFileDiv(file, index) {
-      var divFileName = document.createElement('div');
-      divFileName.setAttribute("id", "file_" + index);
-      divFileName.setAttribute("class", "divFile");
-      divFileName.textContent = "[ File " + index + " ] " +  file.name;
-      divFileName.setAttribute("style", "font-weight: bold;");
-
-      var divFileType = document.createElement('div');
-      divFileType.setAttribute("class", "divFile");
-      
-      var buttonDomain = document.createElement('span');
-      var buttonProblem = document.createElement('span');
-      var buttonAnimation = document.createElement('span');
-      
-      buttonDomain.textContent = "Domain";
-      buttonProblem.textContent = "Problem";
-      buttonAnimation.textContent = "Animation";
-      
-      buttonDomain.classList.add("typeButton");
-      buttonProblem.classList.add("typeButton");
-      buttonAnimation.classList.add("typeButton");
-      
-      buttonDomain.setAttribute("id", "file_" + index + "_domain");
-      buttonProblem.setAttribute("id", "file_" + index + "_problem");
-      buttonAnimation.setAttribute("id", "file_" + index + "_animation");
-      
-      buttonDomain.addEventListener("click", function(e) {
-        buttonDomain.setAttribute("style", "background-color: #117AC8;");
-        buttonProblem.setAttribute("style", "background-color: #9C9C9C;");
-        buttonAnimation.setAttribute("style", "background-color: #9C9C9C;");
-        file.contentType = "Domain";
-      });
-
-      buttonProblem.addEventListener("click", function(e) {
-        buttonDomain.setAttribute("style", "background-color: #9C9C9C;");
-        buttonProblem.setAttribute("style", "background-color: #117AC8;");
-        buttonAnimation.setAttribute("style", "background-color: #9C9C9C;");
-        file.contentType = "Problem";
-      });
-
-      buttonAnimation.addEventListener("click", function(e) {
-        buttonDomain.setAttribute("style", "background-color: #9C9C9C;");
-        buttonProblem.setAttribute("style", "background-color: #9C9C9C;");
-        buttonAnimation.setAttribute("style", "background-color: #117AC8;");
-        file.contentType = "Animation";
-      });
-      
-      divFileType.appendChild(buttonDomain);
-      divFileType.appendChild(buttonProblem);
-      divFileType.appendChild(buttonAnimation);
-      divFileName.appendChild(divFileType);
-      return divFileName;
-    }
-
-    // loads file data
-    function fileLoaderMultiple(file) {
-      var reader = new FileReader();
-      reader.readAsText(file);
-      reader.onload = function (e) {
-        var type = file.contentType;
-        var json = {
-          "name": file.name,
-          "data": e.target.result,
-          "type": type
-        };
-        gameInstance.SendMessage("Canvas", "DropMultipleFiles", JSON.stringify(json));  
-      };
-    }
-
-    function fileLoaderSingle(file, x, y) {
-      var reader = new FileReader();
-      reader.readAsText(file);
-      reader.onload = function (e) {
-        var json = {
-          "name": file.name,
-          "x": x,
-          "y": y,
-          "data": e.target.result,
-        };
-        gameInstance.SendMessage("Canvas", "DropSingleFile", JSON.stringify(json));
-      };
-    }
-    
-    // represents the close button on the modal window
-    var close = document.getElementById("modal-close");
-
-    // represents the submit button on the modal window
-    var submitButton = document.getElementById("modal-submit");
-    submitButton.addEventListener("click", function(e) {
-      for(var i = 0; i < planimation_dragdrop_files.length; i++) {
-        if(planimation_dragdrop_files[i].contentType != null) {
-          fileLoaderMultiple(planimation_dragdrop_files[i]);
-        }
-      }
-      close.click();
-      planimation_dragdrop_files = [];
-    });
-
-    // represents the cancel button on the modal window
-    var cancelButton = document.getElementById("modal-cancel");
-    cancelButton.addEventListener("click", function(e) {
-      close.click();
-      planimation_dragdrop_files = [];
-    });
-    /* (Apr 23, 2020) Drag and Drop update */
-  </script>
 </html>
