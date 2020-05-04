@@ -213,7 +213,6 @@ public class CanvasScript : MonoBehaviour
         // ray tracing for object intersection
         foreach (RaycastResult target in results)
         {
-            Debug.Log(target.gameObject.name);
             if(target.gameObject.name.Equals(DOMAIN + TEXT) | target.gameObject.name.Equals(DOMAIN + BUTTON)) {
                 this.type = DOMAIN;
             } else if (target.gameObject.name.Equals(PROBLEM + TEXT) | target.gameObject.name.Equals(PROBLEM + BUTTON)) {
@@ -260,6 +259,8 @@ public class CanvasScript : MonoBehaviour
             ScenesCoordinator.Coordinator.PushParameters(PARAM_VFG, data);
 
         }
+
+        this.type = "";
     }
 
     // Custom object for json utility
