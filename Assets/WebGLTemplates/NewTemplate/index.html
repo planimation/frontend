@@ -172,6 +172,8 @@
   <script type="text/javascript">
     /* (Apr 23, 2020) Drag and Drop update */
     var planimation_dragdrop_files = [];
+    var offsetX;
+    var offsetY;
     
     // prevents default before dropping item
     document.addEventListener("dragover", function(e) {
@@ -184,6 +186,13 @@
       e.stopPropagation();
       e.preventDefault();
       planimation_dragdrop_files = e.dataTransfer.files;
+      offsetX = e.offsetX;
+      offsetY = e.offsetY;
+      // check the current Unity scene
+      gameInstance.SendMessage("Canvas", "CheckCurrentScene", "");  
+    });
+
+    function uploadPDDLFile() {
       // open the modal window only when multiple files are dropped
       if(planimation_dragdrop_files.length > 1) { 
         var open = document.getElementById("modal-open");
@@ -195,9 +204,14 @@
         open.click();
       // when a single file is dropped
       } else {
-        fileLoaderSingle(planimation_dragdrop_files[0], e.offsetX, window.innerHeight - e.offsetY);  
+        fileLoaderSingle(planimation_dragdrop_files[0], offsetX, window.innerHeight - offsetY);  
       }
-    });
+    }
+
+    function uploadVFGFile() {
+      // take the first file and upload it
+      fileLoaderSingle(planimation_dragdrop_files[0], offsetX, window.innerHeight - offsetY);  
+    }
 
     // appends type-select menu on the modal window according to file(s)
     function createFileDiv(file, index) {
@@ -265,7 +279,7 @@
           "data": e.target.result,
           "type": type
         };
-        gameInstance.SendMessage("Canvas", "DropMultipleFile", JSON.stringify(json));  
+        gameInstance.SendMessage("Canvas", "DropMultipleFiles", JSON.stringify(json));  
       };
     }
 
