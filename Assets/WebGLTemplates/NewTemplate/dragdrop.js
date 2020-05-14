@@ -26,7 +26,9 @@
     } else {
       var regexp = /\.pddl$/;
       if(!planimation.files[0].name.match(regexp)) {
-        alert("Please put in pddl files!");
+        //alert("Please put in pddl files!");
+        // code by Jayan - 14th May 2020
+        customAlertBox("Incorrect File Type", "<p>Please upload PDDL (.pddl) files only.</p>");
         return;
       }
       planimation.uploadSingleFile();
@@ -36,7 +38,9 @@
   planimation.uploadVFGFile = function () {
     var regexp = /\.vfg$/;
     if(!planimation.files[0].name.match(regexp)) {
-      alert("Please put in vfg files!");
+      //alert("Please put in vfg files!");
+      // code by Jayan - 14th May 2020
+      customAlertBox("Incorrect File Type", "<p>Please upload VFG (.vfg) file only.</p>");
       return;
     }
     // take the first file and upload it
@@ -52,9 +56,17 @@
 
   // calls file loader for multiple file drop
   planimation.uploadMultipleFiles = function () {
+    // hyper link id
     var open = document.getElementById("modal-open");
+    //table-body
     var typeModal = document.getElementById("file-type");
     typeModal.innerHTML = "";
+
+    // code by Jayan - 14th May 2020
+    // clear any error message in upload file modal
+    var clearErrorMsg = document.getElementById("upload_error_msg"); 
+    clearErrorMsg.innerHTML = "";
+
     var regexp = /\.pddl$/;
     var fileIndex = 1;
     var files = planimation.files;
@@ -62,16 +74,22 @@
       var file = files[i];
       if(!file.name.match(regexp)) {
         var sanitizedName = planimation.sanitize.encode(file.name);
-        alert("[Invalid file: " + sanitizedName + " ] " + "Please put in pddl files!");
+        // alert("[Invalid file: " + sanitizedName + " ] " + "Please put in pddl files!");
+        // code by Jayan - 14th May 2020
+        var msg = 
+          '<b>Alert:</b> File <b>"' 
+          + sanitizedName 
+          + '"</b> invalid format. Please upload PDDL (.pddl) files only.';
+        customErrorDialog("upload_error_msg", msg);
       } else {
+        //will append the UI elements
         typeModal.appendChild(planimation.createFileDiv(file, fileIndex));
+        // code by Jayan - 14th May 2020
+        btnListeners(file, fileIndex);
         fileIndex++;
       }
-    }
-
-    if(typeModal.hasChildNodes()) {
-      open.click();
-    }
+    }  
+    open.click();
   };
 
   // loads single file data
@@ -105,60 +123,92 @@
   };
 
   // appends type-select menu on the modal window according to file(s)
+  // code by Jayan - 14th May 2020
   planimation.createFileDiv = function (file, index) {
+    var table_row = document.createElement('tr');
     var sanitizedName = planimation.sanitize.encode(file.name);
-    var divFileName = document.createElement('div');
-    divFileName.setAttribute("id", "file_" + index);
-    divFileName.setAttribute("class", "divFile");
-    divFileName.textContent = "[ File " + index + " ] " +  sanitizedName;
-    divFileName.setAttribute("style", "font-weight: bold;");
+    table_row.innerHTML = 
+      "<td ><i class='far fa-file-powerpoint'></i> </td><td class='text-left' id='file_'" 
+      + index 
+      + "><i>" 
+      + sanitizedName 
+      + "</i></td><td class='text-center'>" 
+      + "<div class='btn-group' role='group'>" 
+      + "<button type='button' class='btn btn-secondary' id='file_" 
+      + index 
+      + "_domain'>Domain</button>" 
+      + "<button type='button' class='btn btn-secondary' id='file_" 
+      + index 
+      + "_problem'>Problem</button>" 
+      + "<button type='button' class='btn btn-secondary' id='file_" 
+      + index + "_animation'>Animation</button>" 
+      + "</div>" 
+      + "</td>";
+    return table_row;
+  };
 
-    var divFileType = document.createElement('div');
-    divFileType.setAttribute("class", "divFile");
+  // code by Jayan - 14th May 2020
+  /* Event listners for the domain, problem and animation file buttons */
+  function btnListeners(file, index){
+    var buttonDomain = document.getElementById("file_" + index + "_domain");
+    var buttonProblem = document.getElementById("file_" + index + "_problem");
+    var buttonAnimation = document.getElementById("file_" + index + "_animation");
     
-    var buttonDomain = document.createElement('span');
-    var buttonProblem = document.createElement('span');
-    var buttonAnimation = document.createElement('span');
-    
-    buttonDomain.textContent = "Domain";
-    buttonProblem.textContent = "Problem";
-    buttonAnimation.textContent = "Animation";
-    
-    buttonDomain.classList.add("typeButton");
-    buttonProblem.classList.add("typeButton");
-    buttonAnimation.classList.add("typeButton");
-    
-    buttonDomain.setAttribute("id", "file_" + index + "_domain");
-    buttonProblem.setAttribute("id", "file_" + index + "_problem");
-    buttonAnimation.setAttribute("id", "file_" + index + "_animation");
-    
-    buttonDomain.addEventListener("click", () => {
-      buttonDomain.setAttribute("style", "background-color: #117AC8;");
-      buttonProblem.setAttribute("style", "background-color: #9C9C9C;");
-      buttonAnimation.setAttribute("style", "background-color: #9C9C9C;");
+    buttonDomain.addEventListener("click", function(e) {
+      buttonDomain.classList.remove('btn-secondary');
+      buttonDomain.classList.add('btn-success');
+
+      buttonProblem.classList.remove('btn-success');
+      buttonAnimation.classList.remove('btn-success');
+
+      buttonProblem.classList.add('btn-secondary');
+      buttonAnimation.classList.add('btn-secondary');
       file.contentType = "Domain";
     });
 
-    buttonProblem.addEventListener("click", () => {
-      buttonDomain.setAttribute("style", "background-color: #9C9C9C;");
-      buttonProblem.setAttribute("style", "background-color: #117AC8;");
-      buttonAnimation.setAttribute("style", "background-color: #9C9C9C;");
+    buttonProblem.addEventListener("click", function(e) {
+      buttonProblem.classList.remove('btn-secondary');
+      buttonProblem.classList.add('btn-success');
+
+      buttonDomain.classList.remove('btn-success');
+      buttonAnimation.classList.remove('btn-success');
+
+      buttonDomain.classList.add('btn-secondary');
+      buttonAnimation.classList.add('btn-secondary');
       file.contentType = "Problem";
     });
 
-    buttonAnimation.addEventListener("click", () => {
-      buttonDomain.setAttribute("style", "background-color: #9C9C9C;");
-      buttonProblem.setAttribute("style", "background-color: #9C9C9C;");
-      buttonAnimation.setAttribute("style", "background-color: #117AC8;");
+    buttonAnimation.addEventListener("click", function(e) {
+      buttonAnimation.classList.remove('btn-secondary');
+      buttonAnimation.classList.add('btn-success');
+
+      buttonProblem.classList.remove('btn-success');
+      buttonDomain.classList.remove('btn-success');
+
+      buttonProblem.classList.add('btn-secondary');
+      buttonDomain.classList.add('btn-secondary');
       file.contentType = "Animation";
     });
-    
-    divFileType.appendChild(buttonDomain);
-    divFileType.appendChild(buttonProblem);
-    divFileType.appendChild(buttonAnimation);
-    divFileName.appendChild(divFileType);
-    return divFileName;
-  };
+  }
+
+  // code by Jayan - 14th May 2020
+  /* Generate custom alert box for displaying error messages */
+  function customAlertBox(title, message){
+    var alert_title = document.getElementById('alert_title');
+    var alert_message = document.getElementById('alert_msg');
+
+    alert_title.innerHTML = title;
+    alert_message.innerHTML = message;
+
+    $("#modal_alert").modal();
+  }
+
+  // code by Jayan - 14th May 2020
+  // Generate custom eror dialog message
+  function customErrorDialog(id, message){
+    var error_msg = document.getElementById(id);
+    error_msg.innerHTML += "<div class='alert alert-danger' role='alert'><i class='fas fa-exclamation-triangle'></i> " + message + "</div>";
+  }
 
   // waits until document is loaded
   window.addEventListener("load", () => {
