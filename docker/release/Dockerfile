@@ -5,7 +5,7 @@ ENV UNITY_PATH='/opt/Unity/Editor/Unity'
 ARG LICENSE_FILE
 ARG PROJECT_PATH=/root/project
 ARG BUILD_SCRIPT=Buildscript.Build
-ARG LOGFILE=./Logs/build.log
+ARG LOGFILE=./logs/build.log
 ARG UNITY_ARGS='-quit -batchmode -nographics'
 
 WORKDIR /root/project
