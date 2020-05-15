@@ -2329,7 +2329,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Select visualiser file
+  m_Text: Planimation
 --- !u!222 &2003711871
 CanvasRenderer:
   m_ObjectHideFlags: 0
