@@ -14,9 +14,6 @@
   planimation.sanitize.encode = function (str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   };
-
-  // shorthand for namespace object
-  var planimation = window.planimation_dragdrop;
   
   planimation.uploadPDDLFile = function () {
     // open the modal window only when multiple files are dropped
