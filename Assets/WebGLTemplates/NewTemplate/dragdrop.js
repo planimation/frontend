@@ -15,6 +15,7 @@
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   };
   
+  // processes PDDLFile (for Start.unity)
   planimation.uploadPDDLFile = function () {
     // open the modal window only when multiple files are dropped
     if(planimation.files.length > 1) { 
@@ -32,6 +33,7 @@
     }
   };
   
+  // processes VFG file (for VFGUploader.unity)
   planimation.uploadVFGFile = function () {
     var regexp = /\.vfg$/;
     if(!planimation.files[0].name.match(regexp)) {
@@ -216,7 +218,7 @@
       e.preventDefault();
     });
 
-    // opens the modal window of type-select
+    // set file information and call a scene checker
     document.addEventListener("drop", (e) => {
       e.stopPropagation();
       e.preventDefault();
