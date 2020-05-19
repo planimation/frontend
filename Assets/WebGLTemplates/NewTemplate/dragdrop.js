@@ -11,12 +11,12 @@
   planimation.sanitize = planimation.sanitize || {};
   
   // sanitizer
-  planimation.sanitize.encode = function (str) {
+  planimation.sanitize.encode = (str) => {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   };
   
   // processes PDDLFile (for Start.unity)
-  planimation.uploadPDDLFile = function () {
+  planimation.uploadPDDLFile = () => {
     // open the modal window only when multiple files are dropped
     if(planimation.files.length > 1) { 
       planimation.uploadMultipleFiles();
@@ -26,7 +26,7 @@
       if(!planimation.files[0].name.match(regexp)) {
         //alert("Please put in pddl files!");
         // code by Jayan - 14th May 2020
-        customAlertBox("Incorrect File Type", "<p>Please upload PDDL (.pddl) files only.</p>");
+        planimation.customAlertBox("Incorrect File Type", "<p>Please upload PDDL (.pddl) files only.</p>");
         return;
       }
       planimation.uploadSingleFile();
@@ -34,12 +34,12 @@
   };
   
   // processes VFG file (for VFGUploader.unity)
-  planimation.uploadVFGFile = function () {
+  planimation.uploadVFGFile = () => {
     var regexp = /\.vfg$/;
     if(!planimation.files[0].name.match(regexp)) {
       //alert("Please put in vfg files!");
       // code by Jayan - 14th May 2020
-      customAlertBox("Incorrect File Type", "<p>Please upload VFG (.vfg) file only.</p>");
+      planimation.customAlertBox("Incorrect File Type", "<p>Please upload VFG (.vfg) file only.</p>");
       return;
     }
     // take the first file and upload it
@@ -47,14 +47,14 @@
   };
 
   // calls file loader for single file drop
-  planimation.uploadSingleFile = function () {
+  planimation.uploadSingleFile = () => {
     var offsetX = planimation.offsetX;
     var offsetY = window.innerHeight - planimation.offsetY;
     planimation.fileLoaderSingle(planimation.files[0], offsetX, offsetY);
   };
 
   // calls file loader for multiple file drop
-  planimation.uploadMultipleFiles = function () {
+  planimation.uploadMultipleFiles = () => {
     // hyper link id
     var open = document.getElementById("modal-open");
     //table-body
@@ -79,12 +79,12 @@
           '<b>Alert:</b> File <b>"' 
           + sanitizedName 
           + '"</b> invalid format. Please upload PDDL (.pddl) files only.';
-        customErrorDialog("upload_error_msg", msg);
+        planimation.customErrorDialog("upload_error_msg", msg);
       } else {
         //will append the UI elements
         typeModal.appendChild(planimation.createFileDiv(file, fileIndex));
         // code by Jayan - 14th May 2020
-        btnListeners(file, fileIndex);
+        planimation.btnListeners(file, fileIndex);
         fileIndex++;
       }
     }  
@@ -92,7 +92,7 @@
   };
 
   // loads single file data
-  planimation.fileLoaderSingle = function (file, x, y) {
+  planimation.fileLoaderSingle = (file, x, y) => {
     var reader = new FileReader();
     reader.readAsText(file);
     reader.addEventListener("load", (e) => {
@@ -107,7 +107,7 @@
   };
 
   // loads multiple file data
-  planimation.fileLoaderMultiple = function (file) {
+  planimation.fileLoaderMultiple = (file) => {
     var reader = new FileReader();
     reader.readAsText(file);
     reader.addEventListener("load", (e) => {
@@ -123,7 +123,7 @@
 
   // appends type-select menu on the modal window according to file(s)
   // code by Jayan - 14th May 2020
-  planimation.createFileDiv = function (file, index) {
+  planimation.createFileDiv = (file, index) => {
     var table_row = document.createElement('tr');
     var sanitizedName = planimation.sanitize.encode(file.name);
     table_row.innerHTML = 
@@ -148,7 +148,7 @@
 
   // code by Jayan - 14th May 2020
   /* Event listners for the domain, problem and animation file buttons */
-  function btnListeners(file, index){
+  planimation.btnListeners = (file, index) => {
     var buttonDomain = document.getElementById("file_" + index + "_domain");
     var buttonProblem = document.getElementById("file_" + index + "_problem");
     var buttonAnimation = document.getElementById("file_" + index + "_animation");
@@ -188,11 +188,11 @@
       buttonDomain.classList.add('btn-secondary');
       file.contentType = "Animation";
     });
-  }
+  };
 
   // code by Jayan - 14th May 2020
   /* Generate custom alert box for displaying error messages */
-  function customAlertBox(title, message){
+  planimation.customAlertBox = (title, message) => {
     var alert_title = document.getElementById('alert_title');
     var alert_message = document.getElementById('alert_msg');
 
@@ -200,14 +200,14 @@
     alert_message.innerHTML = message;
 
     $("#modal_alert").modal();
-  }
+  };
 
   // code by Jayan - 14th May 2020
   // Generate custom eror dialog message
-  function customErrorDialog(id, message){
+  planimation.customErrorDialog = (id, message) => {
     var error_msg = document.getElementById(id);
     error_msg.innerHTML += "<div class='alert alert-danger' role='alert'><i class='fas fa-exclamation-triangle'></i> " + message + "</div>";
-  }
+  };
 
   // waits until document is loaded
   window.addEventListener("load", () => {
