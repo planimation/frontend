@@ -45,8 +45,18 @@ public class CanvasScript : MonoBehaviour
     InputField textfield;
     string type;
     string name;
-
-
+    
+    /* (Apr 23, 2020) Drag and Drop update */
+    // added constants for file types and component types
+    const string DOMAIN = "Domain";
+    const string PROBLEM = "Problem";
+    const string ANIMATION = "Animation";
+    const string VFG = "visualisationFile";
+    const string PLAN = "Plan";
+    const string TEXT = "Text";
+    const string BUTTON = "Button";
+    const string PARAM_VFG = "Visualisation";
+    /** (Apr 23, 2020) Drag and Drop update **/
 
     // The input file models are strictly checked using IEnumerator
     IEnumerator LoadTexture(string url)
@@ -152,15 +162,7 @@ public class CanvasScript : MonoBehaviour
     }
 
     /* (Apr 23, 2020) Drag and Drop update */
-    const string DOMAIN = "Domain";
-    const string PROBLEM = "Problem";
-    const string ANIMATION = "Animation";
-    const string VFG = "visualisationFile";
-    const string PLAN = "Plan";
-    const string TEXT = "Text";
-    const string BUTTON = "Button";
-    const string PARAM_VFG = "Visualisation";
-
+    // called by javascript and returns the current scene name
     public void CheckCurrentScene() {
 
         string sceneName = SceneManager.GetActiveScene().name;
