@@ -12,7 +12,7 @@ WORKDIR /root/project
 COPY . .
 
 COPY ${LICENSE_FILE} /root/.local/share/unity3d/Unity/Unity_lic.ulf
-RUN ${UNITY_PATH} ${UNITY_ARGS} -projectPath ${PROJECT_PATH} -executeMethod ${BUILD_SCRIPT} -logFile ${LOGFILE}
+RUN ${UNITY_PATH} ${UNITY_ARGS} ${PROJECT_PATH} -executeMethod ${BUILD_SCRIPT} -logFile
 
 FROM nginx 
 COPY --from=builder /root/project/build /usr/share/nginx/html
