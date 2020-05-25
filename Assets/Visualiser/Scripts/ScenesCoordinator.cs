@@ -81,8 +81,8 @@ public class ScenesCoordinator : MonoBehaviour
         byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
         /* upload test for drag and drop function */
 
-        //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
-        UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
+        //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);        
+	UnityWebRequest www = UnityWebRequest.Post("https://planimation.planning.domains/upload/pddl", formData);
 
 		
 
