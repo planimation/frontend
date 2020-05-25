@@ -80,9 +80,9 @@ public class ScenesCoordinator : MonoBehaviour
         //serialize form fields into byte[] => requires a bounday to put in between fields
         byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
         /* upload test for drag and drop function */
-        UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
+        //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
 		//UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
-        //UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
+        UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
 		
 
         www.uploadHandler =  new UploadHandlerRaw(formSections);
