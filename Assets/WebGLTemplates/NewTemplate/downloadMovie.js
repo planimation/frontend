@@ -15,18 +15,22 @@
         planimation.canvasRecorder = RecordRTC(canvas, {
             type: 'canvas'
         });
-
     });
 
     planimation.startRecording = () => {
         planimation.canvasRecorder.startRecording();
+        gameInstance.SendMessage("Canvas", "RecordPlayback");
     };
     
-    planimation.stopRecording = () => {
-
+    planimation.outputGIF = (filetype) => {
         planimation.canvasRecorder.stopRecording(function() {
-            console.log(planimation.canvasRecorder.getBlob());
             planimation.convertStreams(planimation.canvasRecorder.getBlob());
+        });
+    }
+
+    planimation.outputWebM = (filetype) => {
+        planimation.canvasRecorder.stopRecording(function() {
+            planimation.postBlob(planimation.canvasRecorder.getBlob(), "planimation.webm");
         });
     }
 
@@ -57,7 +61,7 @@
 
             planimation.worker.postMessage({
                 type: 'command',
-                arguments: '-i video.webm -c:v mpeg4 -b:v 6400k -strict experimental output.mp4'.split(' '),
+                arguments: '-i video.webm -b:v 64k -strict experimental output.gif'.split(' '),
                 files: [
                     {
                         data: new Uint8Array(aab),
@@ -96,23 +100,24 @@
                 var result = message.data[0];
                 console.log(JSON.stringify(result));
 
-                var blob = new File([result.data], 'test.mp4', {
-                    type: 'video/mp4'
-                });
+                var blob = new File(
+                    [result.data], 
+                    'test.gif', 
+                    { type: 'image/gif'}
+                );
 
                 console.log(JSON.stringify(blob));
 
-                planimation.postBlob(blob);
+                planimation.postBlob(blob, "planimation.gif");
             }
         };
     }
 
-    planimation.postBlob = (blob) => {
+    planimation.postBlob = (blob, filename) => {
         var blobUrl = window.URL.createObjectURL(blob);
         var anchor = document.createElement('a');
-        anchor.download = 'movie.mp4';
+        anchor.download = filename;
         anchor.href = blobUrl;
-        anchor.style.display = 'block';
         anchor.click();
     };
   

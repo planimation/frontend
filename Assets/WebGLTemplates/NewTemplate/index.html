@@ -68,15 +68,11 @@
   </head>
 
   <body>
-    <div id="gameContainer"></div>
-    <div style="position: fixed;top;0;left: 20%;right: 20%;text-align: center;">
-        <button id="start" contenteditable="false">Start Audio+Canvas Recording</button>
-        <button id="stop" disabled contenteditable="false">Stop</button>
-    </div>
-    
+    <div id="gameContainer"></div>    
     <!-- [start] (May 14, 2020) - Jayan Drag and Drop update -->
     <!-- modal section for file type input -->
     <a href="#modal-01" id="modal-open" data-toggle="modal" data-target="#modal-01"></a>
+    <a href="#modal-02" id="modal-open-download" data-toggle="modal" data-target="#modal-02"></a>
 
     <!-- Upload file modal -->
     <div class="modal" tabindex="-1" role="dialog" id="modal-01">
@@ -137,6 +133,49 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- download file modal -->
+    <div class="modal" tabindex="-1" role="dialog" id="modal-02">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-file-upload"></i> Select Download File Type</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="modal-close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div id="upload_error_msg_download"></div>
+            <!--
+            <div class="table-responsive">
+             
+              <table class="table mt-3">
+                <thead class="">
+                  <tr class="text-center table-light text-capitalize">
+                    <th scope="col"></th>
+                    <th scope="col">File Name</th>
+                    <th scope="col">Select file Type</th>
+                  </tr>
+                </thead>
+                 <tbody id="file-type">       
+                </tbody>
+              </table>
+
+            </div>
+            <!-->
+            <button type="button" class="btn btn-secondary" id="download-vfg">VFG</button>
+            <button type="button" class="btn btn-secondary" id="download-webm">WebM</button> 
+          </div>
+          <div class="modal-footer">
+            <div class="container-fluid text-right">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-cancel-download">Cancel</button>
+              <button type="button" class="btn btn-primary" id="modal-submit-download"><i class="fas fa-upload"></i> Download</button>
+            </div>
           </div>
         </div>
       </div>

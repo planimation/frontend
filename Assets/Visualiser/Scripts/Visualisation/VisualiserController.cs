@@ -43,7 +43,10 @@ namespace Visualiser
         private static extern void StartRecording();
 
         [DllImport("__Internal")]
-        private static extern void StopRecording();
+        private static extern void OutputGIF();
+
+        [DllImport("__Internal")]
+        private static extern void OutputWebM();
         /** (May 17, 2020) Download Movie update **/
 
         // Static readonly fileds
@@ -62,6 +65,9 @@ namespace Visualiser
         public ScrollRect SubgoalScrollRect;
         public Image PlayButtonSprite;
 
+        /* (May 17, 2020) Download Movie update */
+        public GameObject DownloadPanel;
+        /** (May 17, 2020) Download Movie update **/
 
         // Sprite objects
         Sprite PlaySprite;
@@ -79,7 +85,7 @@ namespace Visualiser
         string vf;
 
         /* (May 17, 2020) Download Movie update */
-        bool isRecording = false;
+        string filetype;
         /** (May 17, 2020) Download Movie update **/
         
         
@@ -298,11 +304,21 @@ namespace Visualiser
                 if (visualSolution.IsFinalStage())
                 {
                     Pause();
-                    if(isRecording) 
+                    
+                    /* (May 27, 2020) Movie download update */
+                    if(this.filetype != null) 
                     {
-                        StopRecording();
-                        isRecording = false;
+                        if(this.filetype == "gif") 
+                        {
+                            OutputGIF();
+                        } 
+                        else if(this.filetype == "webm")
+                        {
+                            OutputWebM();
+                        }
+                        this.filetype = null;
                     }
+                    /* (May 27, 2020) Movie download update */
                 }
                 else
                 {
@@ -328,6 +344,9 @@ namespace Visualiser
         public void DownloadVF()
         {
             Download(vf, "text/plain", "vf_out.vfg");
+            /* (May 27, 2020) Movie download update */
+            DownloadPanel.SetActive(false);
+            /** (May 27, 2020) Movie download update **/
         }
 
         #region Stage Rendering
@@ -483,13 +502,30 @@ namespace Visualiser
         #endregion
 
         /* (May 17, 2020) Download Movie update */
-        // call javascript screen recording function
-        public void DownloadMovie()
+        // activate download panel
+        public void OpenFileSelector()
+        {
+            //SelectDownloadFile();
+            DownloadPanel.SetActive(true);
+        }
+
+        // deactivate download panel
+        public void CloseFileSelector()
         {   
+            DownloadPanel.SetActive(false);
+        }
+        
+        // call javascript screen recording function
+        public void RecordPlayback(string filetype)
+        {   
+
+            this.filetype = filetype;
+            // close panel and reset status
+            CloseFileSelector();
             ResetStage();
+            
             // call javascript: start recording
             StartRecording();
-            isRecording = true;
             // start animation
             Play();
         }
