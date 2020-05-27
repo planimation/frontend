@@ -37,6 +37,15 @@ namespace Visualiser
         [DllImport("__Internal")]
         private static extern void Download(string textptr, string fileTypeptr, string fileNameptr);
 
+        /* (May 17, 2020) Download Movie update */
+        // call javascript function through WebGL
+        [DllImport("__Internal")]
+        private static extern void StartRecording();
+
+        [DllImport("__Internal")]
+        private static extern void StopRecording();
+        /** (May 17, 2020) Download Movie update **/
+
         // Static readonly fileds
         readonly static Color SubgoalImplementedColor = new Color(0f, 0.66666667f, 0.10980392f);
         readonly static Color StepButtonHighlightedColor = new Color(0.5613208f, 0.826122f, 1f);
@@ -68,6 +77,10 @@ namespace Visualiser
         bool playing;   // Indicates if palying animation
         int storedStage; // Stores the stage index before jumping to the final stage
         string vf;
+
+        /* (May 17, 2020) Download Movie update */
+        bool isRecording = false;
+        /** (May 17, 2020) Download Movie update **/
         
         
         // Intialization function 
@@ -285,6 +298,11 @@ namespace Visualiser
                 if (visualSolution.IsFinalStage())
                 {
                     Pause();
+                    if(isRecording) 
+                    {
+                        StopRecording();
+                        isRecording = false;
+                    }
                 }
                 else
                 {
@@ -463,5 +481,18 @@ namespace Visualiser
             }
         }
         #endregion
+
+        /* (May 17, 2020) Download Movie update */
+        // call javascript screen recording function
+        public void DownloadMovie()
+        {   
+            ResetStage();
+            // call javascript: start recording
+            StartRecording();
+            isRecording = true;
+            // start animation
+            Play();
+        }
+        /** (May 17, 2020) Download Movie update **/
     }
 }
