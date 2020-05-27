@@ -62,10 +62,17 @@
     <script type="text/javascript" src="dragdrop.js"></script>
     <!-- (May 17, 2020) Movie download update: added script -->
     <script type="text/javascript" src="downloadMovie.js"></script>
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"> </script>
+    <script src="https://cdn.webrtc-experiment.com/screenshot.js"> </script>
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"> </script>
   </head>
 
   <body>
     <div id="gameContainer"></div>
+    <div style="position: fixed;top;0;left: 20%;right: 20%;text-align: center;">
+        <button id="start" contenteditable="false">Start Audio+Canvas Recording</button>
+        <button id="stop" disabled contenteditable="false">Stop</button>
+    </div>
     
     <!-- [start] (May 14, 2020) - Jayan Drag and Drop update -->
     <!-- modal section for file type input -->
