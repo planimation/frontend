@@ -10,12 +10,39 @@
     planimation.workerPath = 'https://archive.org/download/ffmpeg_asm/ffmpeg_asm.js';
 
     window.addEventListener("load", () => {
-        var canvas = document.getElementById('#canvas');
+        planimation.canvas = document.getElementById('#canvas');
         // using RecordRTC library
-        planimation.canvasRecorder = RecordRTC(canvas, {
+        planimation.canvasRecorder = RecordRTC(planimation.canvas, {
             type: 'canvas'
         });
+        planimation.lockpanel = document.createElement('screen-lock');
     });
+
+    planimation.sleep = (ms) => {
+  		return new Promise(resolve => setTimeout(resolve, ms));
+	};
+
+	planimation.lockScreen = () => {
+		// element of lock screen
+	    var div = document.createElement("div");
+	    div.id = "lock-screen";
+	    div.style.position = "fixed";
+	    div.style.left = "0px"; 
+	    div.style.top = "0px";
+	    div.style.width = "100vw";
+	    div.style.height = "100vh"; 
+	    div.style.zIndex = "9999";
+	    div.style.backgroundColor = "black";
+	    div.style.opacity = 0.6;
+	    div.style.textAlign = "center";
+	    div.innerHTML = '<button style="width:300px; height:200px; position:absolute; left:50%; top:50%; margin-left:-150px; margin-top:-100px;" class="btn btn-primary" type="button" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Now Recording</button>';
+  		document.body.appendChild(div);
+	};
+
+	planimation.unlockScreen = () => {
+		var div = document.getElementById("lock-screen");
+  		document.body.removeChild(div);
+	};
 
     planimation.startRecording = () => {
         planimation.canvasRecorder.startRecording();
@@ -23,15 +50,27 @@
     };
     
     planimation.outputGIF = (filetype) => {
-        planimation.canvasRecorder.stopRecording(function() {
-            planimation.convertStreams(planimation.canvasRecorder.getBlob());
-        });
+    	planimation.sleep(500).then(() => {
+		    planimation.canvasRecorder.stopRecording(function() {
+                planimation.convertGIF(planimation.canvasRecorder.getBlob());
+            });
+		});
+    };
+
+    planimation.outputMP4 = (filetype) => {
+        planimation.sleep(500).then(() => {
+		    planimation.canvasRecorder.stopRecording(function() {
+                planimation.convertMP4(planimation.canvasRecorder.getBlob());
+            });
+		});
     }
 
     planimation.outputWebM = (filetype) => {
-        planimation.canvasRecorder.stopRecording(function() {
-            planimation.postBlob(planimation.canvasRecorder.getBlob(), "planimation.webm");
-        });
+        planimation.sleep(500).then(() => {
+		    planimation.canvasRecorder.stopRecording(function() {
+                planimation.postBlob(planimation.canvasRecorder.getBlob(), "planimation.webm");
+            });
+		});
     }
 
     planimation.processInWebWorker = () => {
@@ -47,7 +86,7 @@
         return worker;
     }
 
-    planimation.convertStreams = (videoBlob) => {
+    planimation.convertGIF = (videoBlob) => {
         
         console.log("called converter");
 
@@ -61,7 +100,8 @@
 
             planimation.worker.postMessage({
                 type: 'command',
-                arguments: '-i video.webm -b:v 64k -strict experimental output.gif'.split(' '),
+                //arguments: '-i video.webm -b:v 6400k -strict experimental output.gif'.split(' '),
+                arguments: '-i video.webm -r 10 -vf scale=640:-1 -f gif output.gif'.split(' '),
                 files: [
                     {
                         data: new Uint8Array(aab),
@@ -113,12 +153,82 @@
         };
     }
 
+    planimation.convertMP4 = (videoBlob) => {
+        
+        console.log("called converter");
+
+        var aab;
+        var buffersReady;
+        var workerReady;
+        var posted;
+
+        var postMessage = function() {
+            posted = true;
+
+            planimation.worker.postMessage({
+                type: 'command',
+                arguments: '-i video.webm -c:v mpeg4 -b:v 16k -strict experimental output.mp4'.split(' '),
+                files: [
+                    {
+                        data: new Uint8Array(aab),
+                        name: 'video.webm'
+                    }
+                ]
+            });
+        };
+
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+            aab = this.result;
+            postMessage();
+        };
+        fileReader.readAsArrayBuffer(videoBlob);
+
+        if (!planimation.worker) {
+            planimation.worker = planimation.processInWebWorker();
+        }
+
+        planimation.worker.onmessage = (event) => {
+            var message = event.data;
+            if (message.type == "ready") {
+                console.log('<a href="'+ planimation.workerPath +'" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file has been loaded.');
+
+                workerReady = true;
+                if (buffersReady)
+                    postMessage();
+            } else if (message.type == "stdout") {
+                console.log(message.data);
+            } else if (message.type == "start") {
+                console.log('<a href="'+ planimation.workerPath +'" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file received ffmpeg command.');
+            } else if (message.type == "done") {
+                console.log(JSON.stringify(message));
+
+                var result = message.data[0];
+                console.log(JSON.stringify(result));
+
+                var blob = new File(
+                    [result.data], 
+                    'test.mp4', 
+                    { type: 'video/mp4'}
+                );
+
+                console.log(JSON.stringify(blob));
+
+                planimation.postBlob(blob, "planimation.mp4");
+            }
+        };
+    }
+
     planimation.postBlob = (blob, filename) => {
         var blobUrl = window.URL.createObjectURL(blob);
         var anchor = document.createElement('a');
         anchor.download = filename;
         anchor.href = blobUrl;
         anchor.click();
+        planimation.canvasRecorder = RecordRTC(planimation.canvas, {
+            type: 'canvas'
+        });
+        planimation.unlockScreen();
     };
   
 })();

@@ -24,6 +24,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
+using System.Collections;
 
 namespace Visualiser
 {
@@ -43,10 +45,16 @@ namespace Visualiser
         private static extern void StartRecording();
 
         [DllImport("__Internal")]
+        private static extern void LockScreen();
+
+        [DllImport("__Internal")]
         private static extern void OutputGIF();
 
         [DllImport("__Internal")]
         private static extern void OutputWebM();
+
+        [DllImport("__Internal")]
+        private static extern void OutputMP4();
         /** (May 17, 2020) Download Movie update **/
 
         // Static readonly fileds
@@ -86,6 +94,7 @@ namespace Visualiser
 
         /* (May 17, 2020) Download Movie update */
         string filetype;
+        bool waitReset;
         /** (May 17, 2020) Download Movie update **/
         
         
@@ -300,7 +309,8 @@ namespace Visualiser
         {
             // Plays animation
             if (playing && AreAllAnimationsFinished())
-            {
+            {   
+
                 if (visualSolution.IsFinalStage())
                 {
                     Pause();
@@ -315,6 +325,10 @@ namespace Visualiser
                         else if(this.filetype == "webm")
                         {
                             OutputWebM();
+                        }
+                        else if(this.filetype == "mp4")
+                        {
+                            OutputMP4();
                         }
                         this.filetype = null;
                     }
@@ -515,20 +529,23 @@ namespace Visualiser
             DownloadPanel.SetActive(false);
         }
         
-        // call javascript screen recording function
         public void RecordPlayback(string filetype)
         {   
-
             this.filetype = filetype;
+            this.waitReset = true;
             // close panel and reset status
             CloseFileSelector();
+            LockScreen();
             ResetStage();
-            
-            // call javascript: start recording
+            while (!IsInitialState());
             StartRecording();
-            // start animation
-            Play();
+            Invoke("Play", 0.5f);
         }
+
+        private bool IsInitialState()
+        {   
+            return visualSolution.PreviousStage() == null;
+        }        
         /** (May 17, 2020) Download Movie update **/
     }
 }
