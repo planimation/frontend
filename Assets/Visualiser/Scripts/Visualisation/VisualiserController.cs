@@ -27,6 +27,14 @@ using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
 using System.Collections;
 
+using System.IO;
+
+/* (May 17, 2020) Movie/Gif update */
+using UnityEngine.EventSystems;
+using System.Collections;
+using System.Collections.Generic;
+/** (May 17, 2020) Movie/Gif update **/
+
 namespace Visualiser
 {
     /*
@@ -74,7 +82,9 @@ namespace Visualiser
         public Image PlayButtonSprite;
 
         /* (May 17, 2020) Download Movie update */
-        public GameObject DownloadPanel;
+        public GameObject DownloadPanelFull;
+        public GameObject DownloadPanelVFG;
+        public GameObject BrowserAlertPanel;
         /** (May 17, 2020) Download Movie update **/
 
         // Sprite objects
@@ -95,6 +105,8 @@ namespace Visualiser
         /* (May 17, 2020) Download Movie update */
         string filetype;
         bool waitReset;
+        // string folder = "ScreenshotFolder";
+        // int frameRate = 25;
         /** (May 17, 2020) Download Movie update **/
         
         
@@ -143,6 +155,14 @@ namespace Visualiser
 			}catch (Exception e){
 				//SceneManager.LoadScene("NetworkError");
 			}
+
+            /* (May 17, 2020) Download Movie update */
+            // setup timeframe
+            //Time.captureFramerate = frameRate;
+            
+            // create output folder
+            //Directory.CreateDirectory(folder);
+            /** (May 17, 2020) Download Movie update **/
         }
 
 
@@ -306,10 +326,18 @@ namespace Visualiser
 
         // Unity built-in method, it will be fired in every frame
         void Update()
-        {
+        {   
+            // set file name of screenshot
+            //string name = string.Format("{0}/{1:D04} shot.png", folder, Time.frameCount );
+            
+            // take screenshot, send it to the file
+            //ScreenCapture.CaptureScreenshot(name);
+            
             // Plays animation
             if (playing && AreAllAnimationsFinished())
             {   
+                
+                //Debug.Log("captured?  " + name);
 
                 if (visualSolution.IsFinalStage())
                 {
@@ -359,7 +387,8 @@ namespace Visualiser
         {
             Download(vf, "text/plain", "vf_out.vfg");
             /* (May 27, 2020) Movie download update */
-            DownloadPanel.SetActive(false);
+            DownloadPanelFull.SetActive(false);
+            DownloadPanelVFG.SetActive(false);
             /** (May 27, 2020) Movie download update **/
         }
 
@@ -517,16 +546,58 @@ namespace Visualiser
 
         /* (May 17, 2020) Download Movie update */
         // activate download panel
-        public void OpenFileSelector()
+        public void CheckBrowser(string json)
         {
-            //SelectDownloadFile();
-            DownloadPanel.SetActive(true);
+            var click = ClickEvent.CreateFromJSON(json);
+            float x = float.Parse(click.x);
+        	float y = float.Parse(click.y);
+        	float z = 10.0f;
+	        Vector3 mousePos = new Vector3(x, y, z);
+
+	        // detects current mouse position and find the colliding object
+	        PointerEventData pointer = new PointerEventData(EventSystem.current);
+	        List<RaycastResult> results = new List<RaycastResult>();
+
+	        pointer.position = mousePos;
+	        EventSystem.current.RaycastAll(pointer, results);
+	        
+	        // ray tracing for object intersection
+	        foreach (RaycastResult target in results)
+	        {
+	            if(target.gameObject.name.Equals("DownloadButton")) {
+	                var browser = bool.Parse(click.browser);
+	                if(browser) {
+	                	DownloadPanelFull.SetActive(!DownloadPanelFull.activeSelf);
+		            } else {
+		            	DownloadPanelVFG.SetActive(!DownloadPanelVFG.activeSelf);
+	            	}
+	                break;
+	            }
+	        }
         }
 
-        // deactivate download panel
-        public void CloseFileSelector()
-        {   
-            DownloadPanel.SetActive(false);
+        public void OpenFileSelectorFull()
+        {
+            //SelectDownloadFile();
+            DownloadPanelFull.SetActive(true);
+        }
+
+        public void OpenFileSelectorVFG()
+        {
+            //SelectDownloadFile();
+            DownloadPanelVFG.SetActive(true);
+        }
+
+        public void OpenBrowserAlert()
+        {
+            //SelectDownloadFile();
+            BrowserAlertPanel.SetActive(true);
+        }
+
+        public void CloseBrowserAlert()
+        {
+            //SelectDownloadFile();
+            BrowserAlertPanel.SetActive(false);
         }
         
         public void RecordPlayback(string filetype)
@@ -534,7 +605,7 @@ namespace Visualiser
             this.filetype = filetype;
             this.waitReset = true;
             // close panel and reset status
-            CloseFileSelector();
+            DownloadPanelFull.SetActive(false);
             LockScreen();
             ResetStage();
             while (!IsInitialState());
@@ -545,7 +616,21 @@ namespace Visualiser
         private bool IsInitialState()
         {   
             return visualSolution.PreviousStage() == null;
-        }        
+        }
+
+        // Custom object for json utility
+	    [System.Serializable]
+	    private class ClickEvent
+	    {
+	        public string browser;
+	        public string x;
+	        public string y;
+
+	        public static ClickEvent CreateFromJSON(string jsonString)
+	        {
+	            return JsonUtility.FromJson<ClickEvent>(jsonString);
+	        }
+	    }
         /** (May 17, 2020) Download Movie update **/
     }
 }

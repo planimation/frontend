@@ -18,6 +18,21 @@
         planimation.lockpanel = document.createElement('screen-lock');
     });
 
+    window.addEventListener("click", (e) => {
+        var userAgent = window.navigator.userAgent.toLowerCase();
+        var browser = false;
+        var json = {
+            "x": e.offsetX,
+            "y": window.innerHeight - e.offsetY
+        };
+        // GoogleChrome, Firefox, Opera
+        if(userAgent.indexOf('chrome') != -1 || userAgent.indexOf('firefox') != -1 || userAgent.indexOf('opera') != -1) {
+            browser = true;
+        }
+        json.browser = browser;
+        gameInstance.SendMessage("Controller", "CheckBrowser", JSON.stringify(json));
+    });
+
     planimation.sleep = (ms) => {
   		return new Promise(resolve => setTimeout(resolve, ms));
 	};
@@ -35,7 +50,8 @@
 	    div.style.backgroundColor = "black";
 	    div.style.opacity = 0.6;
 	    div.style.textAlign = "center";
-	    div.innerHTML = '<button style="width:300px; height:200px; position:absolute; left:50%; top:50%; margin-left:-150px; margin-top:-100px;" class="btn btn-primary" type="button" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Now Recording</button>';
+	    div.innerHTML = '<div style="width:300px; height:200px; position: absolute; left: 0; right: 0; top: 0; bottom :0; margin: auto; border-radius: 1px; background:#428bca;">'
+        div.innerHTML +='<div style="color: white; position: absolute; top: 50%; left: 50%; -webkit-transform : translate(-50%,-50%); transform : translate(-50%,-50%); width: 300px; text-align: center;"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Now Recording</div></div>';
   		document.body.appendChild(div);
 	};
 
