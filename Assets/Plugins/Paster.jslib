@@ -1,4 +1,3 @@
-//
 mergeInto(LibraryManager.library, {
  
  

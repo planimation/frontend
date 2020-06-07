@@ -1,4 +1,3 @@
-//
 mergeInto(LibraryManager.library, {
   
   // for the page: Start.unity
