@@ -1,7 +1,7 @@
 /* (May 17, 2020) Movie Download update */
 mergeInto(LibraryManager.library, {
   
-  // start screen recording
+  // start screen recording 
   StartRecording: function() {
     window.planimation_downloadMovie.startRecording();
   },

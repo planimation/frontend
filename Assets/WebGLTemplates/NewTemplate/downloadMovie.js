@@ -7,7 +7,7 @@
     // shorthand for namespace object
     var planimation = window.planimation_downloadMovie;
 
-    // reference to ffmpeg_asm.js
+    // reference to ffmpeg_asm.js 
     planimation.workerPath = 'https://archive.org/download/ffmpeg_asm/ffmpeg_asm.js';
 
     window.addEventListener("load", () => {
