@@ -21,7 +21,7 @@ mergeInto(LibraryManager.library, {
   	window.planimation_downloadMovie.outputWebM();
   },
 
-  // stop recording and generate mp4 file
+  // stop recording and generate mp4 file (currently not used)
   OutputMP4: function() {
   	window.planimation_downloadMovie.outputMP4();
   }
