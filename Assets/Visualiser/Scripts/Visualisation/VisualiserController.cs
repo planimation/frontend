@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
- * 
+ *  
  * Purpose: The controller of the entire visualisation [********Important file**********]
  * Authors: Tom, Collin, Hugo and Sharukh
  * Date: 14/08/2018
@@ -105,8 +105,6 @@ namespace Visualiser
         /* (May 17, 2020) Download Movie update */
         string filetype;
         bool waitReset;
-        // string folder = "ScreenshotFolder";
-        // int frameRate = 25;
         /** (May 17, 2020) Download Movie update **/
         
         
@@ -155,14 +153,6 @@ namespace Visualiser
 			}catch (Exception e){
 				//SceneManager.LoadScene("NetworkError");
 			}
-
-            /* (May 17, 2020) Download Movie update */
-            // setup timeframe
-            //Time.captureFramerate = frameRate;
-            
-            // create output folder
-            //Directory.CreateDirectory(folder);
-            /** (May 17, 2020) Download Movie update **/
         }
 
 
@@ -327,12 +317,6 @@ namespace Visualiser
         // Unity built-in method, it will be fired in every frame
         void Update()
         {   
-            // set file name of screenshot
-            //string name = string.Format("{0}/{1:D04} shot.png", folder, Time.frameCount );
-            
-            // take screenshot, send it to the file
-            //ScreenCapture.CaptureScreenshot(name);
-            
             // Plays animation
             if (playing && AreAllAnimationsFinished())
             {   
@@ -576,30 +560,31 @@ namespace Visualiser
 	        }
         }
 
+        // activate file format panel for valid browsers (Chrome/Firefox/Opera)
         public void OpenFileSelectorFull()
         {
-            //SelectDownloadFile();
             DownloadPanelFull.SetActive(true);
         }
 
+        // activate file format panel for invalid browsers (other than above three)
         public void OpenFileSelectorVFG()
         {
-            //SelectDownloadFile();
             DownloadPanelVFG.SetActive(true);
         }
 
+        // activate alert panel for invalid browsers
         public void OpenBrowserAlert()
         {
-            //SelectDownloadFile();
             BrowserAlertPanel.SetActive(true);
         }
 
+        // deactivate alert panel for invalid browsers
         public void CloseBrowserAlert()
         {
-            //SelectDownloadFile();
             BrowserAlertPanel.SetActive(false);
         }
         
+        // set up condition and start screen recording 
         public void RecordPlayback(string filetype)
         {   
             this.filetype = filetype;
@@ -613,6 +598,7 @@ namespace Visualiser
             Invoke("Play", 0.5f);
         }
 
+        // check if the state is at the beginning
         private bool IsInitialState()
         {   
             return visualSolution.PreviousStage() == null;

@@ -7,6 +7,7 @@
     // shorthand for namespace object
     var planimation = window.planimation_downloadMovie;
 
+    // reference to ffmpeg_asm.js 
     planimation.workerPath = 'https://archive.org/download/ffmpeg_asm/ffmpeg_asm.js';
 
     window.addEventListener("load", () => {
@@ -25,11 +26,14 @@
             "x": e.offsetX,
             "y": window.innerHeight - e.offsetY
         };
+        
         // GoogleChrome, Firefox, Opera
         if(userAgent.indexOf('chrome') != -1 || userAgent.indexOf('firefox') != -1 || userAgent.indexOf('opera') != -1) {
             browser = true;
         }
         json.browser = browser;
+        
+        // call browser check function
         gameInstance.SendMessage("Controller", "CheckBrowser", JSON.stringify(json));
     });
 
@@ -37,6 +41,8 @@
   		return new Promise(resolve => setTimeout(resolve, ms));
 	};
 
+
+    // screen lock function during recording
 	planimation.lockScreen = () => {
 		// element of lock screen
 	    var div = document.createElement("div");
@@ -55,16 +61,19 @@
   		document.body.appendChild(div);
 	};
 
+    // stop screen locking after recording
 	planimation.unlockScreen = () => {
 		var div = document.getElementById("lock-screen");
   		document.body.removeChild(div);
 	};
 
+    // call screen recorder
     planimation.startRecording = () => {
         planimation.canvasRecorder.startRecording();
         gameInstance.SendMessage("Canvas", "RecordPlayback");
     };
     
+    // call GIF converter
     planimation.outputGIF = (filetype) => {
     	planimation.sleep(500).then(() => {
 		    planimation.canvasRecorder.stopRecording(function() {
@@ -73,6 +82,8 @@
 		});
     };
 
+
+    // call MP4 converter
     planimation.outputMP4 = (filetype) => {
         planimation.sleep(500).then(() => {
 		    planimation.canvasRecorder.stopRecording(function() {
@@ -81,6 +92,7 @@
 		});
     }
 
+    // call WebM downloader
     planimation.outputWebM = (filetype) => {
         planimation.sleep(500).then(() => {
 		    planimation.canvasRecorder.stopRecording(function() {
@@ -89,6 +101,7 @@
 		});
     }
 
+    // asynchronous process worker for format conversion
     planimation.processInWebWorker = () => {
         var blob = URL.createObjectURL(
             new Blob(
@@ -102,6 +115,7 @@
         return worker;
     }
 
+    // converter for GIF from WebM
     planimation.convertGIF = (videoBlob) => {
         
         console.log("called converter");
@@ -111,6 +125,7 @@
         var workerReady;
         var posted;
 
+        // pass data to worker thread
         var postMessage = function() {
             posted = true;
 
@@ -127,6 +142,7 @@
             });
         };
 
+        // read file data
         var fileReader = new FileReader();
         fileReader.onload = function() {
             aab = this.result;
@@ -134,10 +150,12 @@
         };
         fileReader.readAsArrayBuffer(videoBlob);
 
+        // get asynchrounous process
         if (!planimation.worker) {
             planimation.worker = planimation.processInWebWorker();
         }
 
+        // asynchronous event from worker
         planimation.worker.onmessage = (event) => {
             var message = event.data;
             if (message.type == "ready") {
@@ -150,12 +168,15 @@
                 console.log(message.data);
             } else if (message.type == "start") {
                 console.log('<a href="'+ planimation.workerPath +'" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file received ffmpeg command.');
+            
+            // when conversion is done
             } else if (message.type == "done") {
                 console.log(JSON.stringify(message));
 
                 var result = message.data[0];
                 console.log(JSON.stringify(result));
 
+                // set up for GIF format
                 var blob = new File(
                     [result.data], 
                     'test.gif', 
@@ -164,11 +185,13 @@
 
                 console.log(JSON.stringify(blob));
 
+                // set up for downloading
                 planimation.postBlob(blob, "planimation.gif");
             }
         };
     }
 
+    // converter for MP4 from WebM
     planimation.convertMP4 = (videoBlob) => {
         
         console.log("called converter");
@@ -178,6 +201,7 @@
         var workerReady;
         var posted;
 
+        // pass data to worker thread
         var postMessage = function() {
             posted = true;
 
@@ -193,6 +217,7 @@
             });
         };
 
+        // read file data
         var fileReader = new FileReader();
         fileReader.onload = function() {
             aab = this.result;
@@ -200,10 +225,12 @@
         };
         fileReader.readAsArrayBuffer(videoBlob);
 
+        // get asynchrounous process
         if (!planimation.worker) {
             planimation.worker = planimation.processInWebWorker();
         }
 
+        // asynchronous event from worker
         planimation.worker.onmessage = (event) => {
             var message = event.data;
             if (message.type == "ready") {
@@ -216,12 +243,15 @@
                 console.log(message.data);
             } else if (message.type == "start") {
                 console.log('<a href="'+ planimation.workerPath +'" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file received ffmpeg command.');
+            
+            // when conversion is done
             } else if (message.type == "done") {
                 console.log(JSON.stringify(message));
 
                 var result = message.data[0];
                 console.log(JSON.stringify(result));
 
+                // set up for MP4 format
                 var blob = new File(
                     [result.data], 
                     'test.mp4', 
@@ -230,11 +260,13 @@
 
                 console.log(JSON.stringify(blob));
 
+                // set up for downloading
                 planimation.postBlob(blob, "planimation.mp4");
             }
         };
     }
 
+    // download files automatically 
     planimation.postBlob = (blob, filename) => {
         var blobUrl = window.URL.createObjectURL(blob);
         var anchor = document.createElement('a');

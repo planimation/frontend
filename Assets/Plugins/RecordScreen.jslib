@@ -1,7 +1,7 @@
 /* (May 17, 2020) Movie Download update */
 mergeInto(LibraryManager.library, {
   
-  // start screen recording
+  // start screen recording 
   StartRecording: function() {
     window.planimation_downloadMovie.startRecording();
   },
@@ -21,7 +21,7 @@ mergeInto(LibraryManager.library, {
   	window.planimation_downloadMovie.outputWebM();
   },
 
-  // stop recording and generate mp4 file
+  // stop recording and generate mp4 file (currently not used)
   OutputMP4: function() {
   	window.planimation_downloadMovie.outputMP4();
   }
