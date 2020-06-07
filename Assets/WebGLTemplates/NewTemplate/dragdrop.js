@@ -1,4 +1,4 @@
-/* (Apr 23, 2020) Drag and Drop update */
+/* (Apr 23, 2020) Drag and Drop update  */
 (function () {
 
   // namespace for planimation
