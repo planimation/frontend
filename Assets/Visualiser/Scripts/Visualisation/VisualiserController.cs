@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
- * 
+ *  
  * Purpose: The controller of the entire visualisation [********Important file**********]
  * Authors: Tom, Collin, Hugo and Sharukh
  * Date: 14/08/2018
@@ -24,6 +24,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
+using System.Collections;
+
+using System.IO;
+
+/* (May 17, 2020) Movie/Gif update */
+using UnityEngine.EventSystems;
+using System.Collections;
+using System.Collections.Generic;
+/** (May 17, 2020) Movie/Gif update **/
 
 namespace Visualiser
 {
@@ -36,6 +46,24 @@ namespace Visualiser
         //Download function
         [DllImport("__Internal")]
         private static extern void Download(string textptr, string fileTypeptr, string fileNameptr);
+
+        /* (May 17, 2020) Download Movie update */
+        // call javascript function through WebGL
+        [DllImport("__Internal")]
+        private static extern void StartRecording();
+
+        [DllImport("__Internal")]
+        private static extern void LockScreen();
+
+        [DllImport("__Internal")]
+        private static extern void OutputGIF();
+
+        [DllImport("__Internal")]
+        private static extern void OutputWebM();
+
+        [DllImport("__Internal")]
+        private static extern void OutputMP4();
+        /** (May 17, 2020) Download Movie update **/
 
         // Static readonly fileds
         readonly static Color SubgoalImplementedColor = new Color(0f, 0.66666667f, 0.10980392f);
@@ -53,6 +81,11 @@ namespace Visualiser
         public ScrollRect SubgoalScrollRect;
         public Image PlayButtonSprite;
 
+        /* (May 17, 2020) Download Movie update */
+        public GameObject DownloadPanelFull;
+        public GameObject DownloadPanelVFG;
+        public GameObject BrowserAlertPanel;
+        /** (May 17, 2020) Download Movie update **/
 
         // Sprite objects
         Sprite PlaySprite;
@@ -68,6 +101,11 @@ namespace Visualiser
         bool playing;   // Indicates if palying animation
         int storedStage; // Stores the stage index before jumping to the final stage
         string vf;
+
+        /* (May 17, 2020) Download Movie update */
+        string filetype;
+        bool waitReset;
+        /** (May 17, 2020) Download Movie update **/
         
         
         // Intialization function 
@@ -278,13 +316,35 @@ namespace Visualiser
 
         // Unity built-in method, it will be fired in every frame
         void Update()
-        {
+        {   
             // Plays animation
             if (playing && AreAllAnimationsFinished())
-            {
+            {   
+                
+                //Debug.Log("captured?  " + name);
+
                 if (visualSolution.IsFinalStage())
                 {
                     Pause();
+                    
+                    /* (May 27, 2020) Movie download update */
+                    if(this.filetype != null) 
+                    {
+                        if(this.filetype == "gif") 
+                        {
+                            OutputGIF();
+                        } 
+                        else if(this.filetype == "webm")
+                        {
+                            OutputWebM();
+                        }
+                        else if(this.filetype == "mp4")
+                        {
+                            OutputMP4();
+                        }
+                        this.filetype = null;
+                    }
+                    /* (May 27, 2020) Movie download update */
                 }
                 else
                 {
@@ -310,6 +370,10 @@ namespace Visualiser
         public void DownloadVF()
         {
             Download(vf, "text/plain", "vf_out.vfg");
+            /* (May 27, 2020) Movie download update */
+            DownloadPanelFull.SetActive(false);
+            DownloadPanelVFG.SetActive(false);
+            /** (May 27, 2020) Movie download update **/
         }
 
         #region Stage Rendering
@@ -463,5 +527,96 @@ namespace Visualiser
             }
         }
         #endregion
+
+        /* (May 17, 2020) Download Movie update */
+        // activate download panel
+        public void CheckBrowser(string json)
+        {
+            var click = ClickEvent.CreateFromJSON(json);
+            float x = float.Parse(click.x);
+        	float y = float.Parse(click.y);
+        	float z = 10.0f;
+	        Vector3 mousePos = new Vector3(x, y, z);
+
+	        // detects current mouse position and find the colliding object
+	        PointerEventData pointer = new PointerEventData(EventSystem.current);
+	        List<RaycastResult> results = new List<RaycastResult>();
+
+	        pointer.position = mousePos;
+	        EventSystem.current.RaycastAll(pointer, results);
+	        
+	        // ray tracing for object intersection
+	        foreach (RaycastResult target in results)
+	        {
+	            if(target.gameObject.name.Equals("DownloadButton")) {
+	                var browser = bool.Parse(click.browser);
+	                if(browser) {
+	                	DownloadPanelFull.SetActive(!DownloadPanelFull.activeSelf);
+		            } else {
+		            	DownloadPanelVFG.SetActive(!DownloadPanelVFG.activeSelf);
+	            	}
+	                break;
+	            }
+	        }
+        }
+
+        // activate file format panel for valid browsers (Chrome/Firefox/Opera)
+        public void OpenFileSelectorFull()
+        {
+            DownloadPanelFull.SetActive(true);
+        }
+
+        // activate file format panel for invalid browsers (other than above three)
+        public void OpenFileSelectorVFG()
+        {
+            DownloadPanelVFG.SetActive(true);
+        }
+
+        // activate alert panel for invalid browsers
+        public void OpenBrowserAlert()
+        {
+            BrowserAlertPanel.SetActive(true);
+        }
+
+        // deactivate alert panel for invalid browsers
+        public void CloseBrowserAlert()
+        {
+            BrowserAlertPanel.SetActive(false);
+        }
+        
+        // set up condition and start screen recording 
+        public void RecordPlayback(string filetype)
+        {   
+            this.filetype = filetype;
+            this.waitReset = true;
+            // close panel and reset status
+            DownloadPanelFull.SetActive(false);
+            LockScreen();
+            ResetStage();
+            while (!IsInitialState());
+            StartRecording();
+            Invoke("Play", 0.5f);
+        }
+
+        // check if the state is at the beginning
+        private bool IsInitialState()
+        {   
+            return visualSolution.PreviousStage() == null;
+        }
+
+        // Custom object for json utility
+	    [System.Serializable]
+	    private class ClickEvent
+	    {
+	        public string browser;
+	        public string x;
+	        public string y;
+
+	        public static ClickEvent CreateFromJSON(string jsonString)
+	        {
+	            return JsonUtility.FromJson<ClickEvent>(jsonString);
+	        }
+	    }
+        /** (May 17, 2020) Download Movie update **/
     }
 }
