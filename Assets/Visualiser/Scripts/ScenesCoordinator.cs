@@ -82,9 +82,8 @@ public class ScenesCoordinator : MonoBehaviour
         /* upload test for drag and drop function */
 
         //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
+	//UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
         UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
-
-		
 
         www.uploadHandler =  new UploadHandlerRaw(formSections);
 		www.SetRequestHeader("Content-Type", "multipart/form-data; boundary="+ Encoding.UTF8.GetString(boundary));
