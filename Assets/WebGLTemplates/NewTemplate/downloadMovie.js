@@ -15,9 +15,9 @@
         // using RecordRTC library
         planimation.canvasRecorder = RecordRTC(planimation.canvas, {
             type: 'canvas'
-        });
+        } );
         planimation.lockpanel = document.createElement('screen-lock');
-    });
+    } );
 
     window.addEventListener("click", (e) => {
         var userAgent = window.navigator.userAgent.toLowerCase();
@@ -78,6 +78,16 @@
     	planimation.sleep(500).then(() => {
 		    planimation.canvasRecorder.stopRecording(function() {
                 planimation.convertGIF(planimation.canvasRecorder.getBlob());
+            });
+		});
+    };
+
+    //Added by Mengyi Fan
+    // call PNG converter
+    planimation.outputPNG = (filetype) => {
+    	planimation.sleep(500).then(() => {
+		    planimation.canvasRecorder.stopRecording(function() {
+                planimation.convertPNG(planimation.canvasRecorder.getBlob());
             });
 		});
     };
@@ -265,6 +275,90 @@
             }
         };
     }
+
+    //Added by Mengyi Fan
+    // converter for PNG from WebM
+    planimation.convertPNG = (videoBlob) => {
+
+        console.log("called converter");
+
+        var aab;
+        var buffersReady;
+        var workerReady;
+        var posted;
+
+        // pass data to worker thread
+        var postMessage = function() {
+            posted = true;
+
+            planimation.worker.postMessage({
+                type: 'command',
+                //arguments: '-i video.webm -b:v 6400k -strict experimental output.gif'.split(' '),
+                //arguments: '-i video.webm -r 10 -vf scale=640:-1 -f gif output.gif'.split(' '),
+                arguments: '-i video.webm -r 10 -vf scale=640:-1 -f image2 output%03d.jpg'.split(' '),
+                files: [
+                    {
+                        data: new Uint8Array(aab),
+                        name: 'video.webm'
+                    }
+                ]
+            });
+        };
+
+        // read file data
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+            aab = this.result;
+            postMessage();
+        };
+        fileReader.readAsArrayBuffer(videoBlob);
+
+        // get asynchrounous process
+        if (!planimation.worker) {
+            planimation.worker = planimation.processInWebWorker();
+        }
+
+        // asynchronous event from worker
+        planimation.worker.onmessage = (event) => {
+            var message = event.data;
+            if (message.type == "ready") {
+                console.log('<a href="'+ planimation.workerPath +'" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file has been loaded.');
+
+                workerReady = true;
+                if (buffersReady)
+                    postMessage();
+            } else if (message.type == "stdout") {
+                console.log(message.data);
+            } else if (message.type == "start") {
+                console.log('<a href="'+ planimation.workerPath +'" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file received ffmpeg command.');
+
+            // when conversion is done
+            } else if (message.type == "done") {
+                 //store image data to the zip file
+                var pngLength = Object.keys(message.data).length;
+                var zip = new JSZip();
+                var img = zip.folder("planimation");
+                var i=0;
+                for(i;i<pngLength;i++){
+
+                    var result = message.data[i];
+                    img.file("output "+ i +".jpg", result.data , { base64:true } );
+
+                }
+                zip.generateAsync({type:"blob"}).then(function(content){
+
+                var blobUrl = window.URL.createObjectURL(content);
+                var anchor = document.createElement('a');
+                anchor.download = "planimation.zip";
+                anchor.href = blobUrl;
+                anchor.click();
+                });
+                planimation.canvasRecorder = RecordRTC(planimation.canvas,{type:'canvas'});
+                planimation.unlockScreen();
+            }
+        };
+    }
+
 
     // download files automatically 
     planimation.postBlob = (blob, filename) => {

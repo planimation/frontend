@@ -16,6 +16,14 @@ mergeInto(LibraryManager.library, {
   	window.planimation_downloadMovie.outputGIF();
   },
 
+  //Added by Mengyi Fan
+  // stop recording and generate png file
+  OutputPNG: function() {
+  	window.planimation_downloadMovie.outputPNG();
+  },
+
+
+
   // stop recording and generate webm file
   OutputWebM: function() {
   	window.planimation_downloadMovie.outputWebM();

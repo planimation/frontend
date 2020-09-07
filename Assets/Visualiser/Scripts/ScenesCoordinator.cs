@@ -1,12 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
- * 
+ *
  * Purpose: The scenes coordinator manages parameters that are passing through different scenes
  * Authors: Tom, Collin, Hugo and Sharukh
  * Date: 14/08/2018
  * Reviewers: Sharukh, Gang and May
  * Review date: 10/09/2018
- * 
+ *
  * /
  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   */
@@ -60,7 +60,7 @@ public class ScenesCoordinator : MonoBehaviour
         sceneParameters.Add(sceneName, parameters);
     }
 
-    // Interface for other objects to use 
+    // Interface for other objects to use
     public void uploadVF(){
     	SceneManager.LoadScene ("Visualisation");
     }
@@ -68,30 +68,36 @@ public class ScenesCoordinator : MonoBehaviour
     {
         SceneManager.LoadScene("planimationPlugin");
     }
-    // Interface for other objects to use 
+    // Interface for other objects to use
     public void uploadallfile(){
     	StartCoroutine (generateVisualiser ());
-    } 
+    }
 
     // Make a POST request to the server for the visualiser file
     IEnumerator generateVisualiser(){
     	//generate a unique boundary
-    	byte[] boundary = UnityWebRequest.GenerateBoundary();       
+    	byte[] boundary = UnityWebRequest.GenerateBoundary();
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
     	formData.Add( new MultipartFormDataSection("domain",domaintxt ));
     	formData.Add( new MultipartFormDataSection("problem",problemtxt ));
     	formData.Add( new MultipartFormDataSection("animation",animationprofile ));
-        formData.Add(new MultipartFormDataSection("plan", plantxt));
-        formData.Add(new MultipartFormDataSection("url", customSolverDomain));
-        //serialize form fields into byte[] => requires a bounday to put in between fields
-        byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
-        /* upload test for drag and drop function */
+      formData.Add(new MultipartFormDataSection("plan", plantxt));
+      formData.Add(new MultipartFormDataSection("url", customSolverDomain));
+      //serialize form fields into byte[] => requires a bounday to put in between fields
+      byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
+      /* upload test for drag and drop function */
 
-        string port = GetUploadApi();
-        Debug.Log("testing the get upload api method" + port);
-        UnityWebRequest www = UnityWebRequest.Post(port, formData);
+      string port = GetUploadApi();
+      Debug.Log("testing the get upload api method" + port);
+      UnityWebRequest www = UnityWebRequest.Post(port, formData);
+      // download sequential PNG, add javascript lib in index.html and changes in downloadMovie.js
 
-        www.uploadHandler =  new UploadHandlerRaw(formSections);
+      // UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
+       //UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
+      //UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
+      // download sequential PNG, add javascript lib in index.html and changes in downloadMovie.js
+
+      www.uploadHandler =  new UploadHandlerRaw(formSections);
     	www.SetRequestHeader("Content-Type", "multipart/form-data; boundary="+ Encoding.UTF8.GetString(boundary));
     	yield return www.SendWebRequest();
     	// Showing error scene if plan are not found or experiencing network error
@@ -128,5 +134,5 @@ public class ScenesCoordinator : MonoBehaviour
     {
         this.customSolverDomain = customSolver;
     }
- 
+
 }
