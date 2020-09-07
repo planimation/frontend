@@ -334,27 +334,27 @@
 
             // when conversion is done
             } else if (message.type == "done") {
-                //  //store image data to the zip file
-                // var pngLength = Object.keys(message.data).length;
-                // var zip = new JSZip();
-                // var img = zip.folder("planimation");
-                // var i=0;
-                // for(i;i<pngLength;i++){
+                 //store image data to the zip file
+                var pngLength = Object.keys(message.data).length;
+                var zip = new JSZip();
+                var img = zip.folder("planimation");
+                var i=0;
+                for(i;i<pngLength;i++){
 
-                //     var result = message.data[i];
-                //     img.file("output "+ i +".jpg", result.data , { base64:true } );
+                    var result = message.data[i];
+                    img.file("output "+ i +".jpg", result.data , { base64:true } );
 
-                // }
-                // zip.generateAsync({type:"blob"}).then(function(content){
+                }
+                zip.generateAsync({type:"blob"}).then(function(content){
 
-                // var blobUrl = window.URL.createObjectURL(content);
-                // var anchor = document.createElement('a');
-                // anchor.download = "planimation.zip";
-                // anchor.href = blobUrl;
-                // anchor.click();
-                // });
-                // planimation.canvasRecorder = RecordRTC(planimation.canvas,{type:'canvas'});
-                // planimation.unlockScreen();
+                var blobUrl = window.URL.createObjectURL(content);
+                var anchor = document.createElement('a');
+                anchor.download = "planimation.zip";
+                anchor.href = blobUrl;
+                anchor.click();
+                });
+                planimation.canvasRecorder = RecordRTC(planimation.canvas,{type:'canvas'});
+                planimation.unlockScreen();
             }
         };
     }
