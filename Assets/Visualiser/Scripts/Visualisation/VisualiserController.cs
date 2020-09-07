@@ -59,6 +59,9 @@ namespace Visualiser
         private static extern void OutputGIF();
 
         [DllImport("__Internal")]
+        private static extern void OutputPNG();
+
+        [DllImport("__Internal")]
         private static extern void OutputWebM();
 
         [DllImport("__Internal")]
@@ -333,7 +336,13 @@ namespace Visualiser
                         if(this.filetype == "gif") 
                         {
                             OutputGIF();
-                        } 
+                        }
+                        //Added by Mengyi Fan
+                        else if(this.filetype == "png")
+                        {
+                            OutputPNG();
+                        }
+
                         else if(this.filetype == "webm")
                         {
                             OutputWebM();
