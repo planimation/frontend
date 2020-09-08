@@ -277,6 +277,7 @@
     }
 
     //Added by Mengyi Fan
+    //Edit by Changyuan Liu
     // converter for PNG from WebM
     planimation.convertPNG = (videoBlob) => {
 
