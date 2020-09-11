@@ -296,7 +296,9 @@
                 type: 'command',
                 //arguments: '-i video.webm -b:v 6400k -strict experimental output.gif'.split(' '),
                 //arguments: '-i video.webm -r 10 -vf scale=640:-1 -f gif output.gif'.split(' '),
-                arguments: '-i video.webm -r 10 -vf scale=640:-1 -f image2 output%03d.jpg'.split(' '),
+                //arguments: '-i video.webm -r 10 -vf scale=640:-1 -f image2 output%03d.jpg'.split(' '),
+                //following command added by Xinzhe Li
+                arguments: '-i video.webm -vsync 0 -vf mpdecimate -f image2 output%03d.jpg'.split(' '),
                 files: [
                     {
                         data: new Uint8Array(aab),
