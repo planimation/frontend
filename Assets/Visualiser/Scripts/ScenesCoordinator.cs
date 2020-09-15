@@ -14,7 +14,6 @@
 /* The scenes coordinator manages parameters that are passing through different scenes, including
  * all the uploaded files and the visualisation file*/
 using UnityEngine;
-using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
@@ -25,10 +24,6 @@ using Visualiser;
 
 public class ScenesCoordinator : MonoBehaviour
 {
-    // External web config file (Sep 14, 2020)
-    [DllImport("__Internal")]
-    private static extern string GetApiPort();
-
     public static ScenesCoordinator Coordinator;
     Dictionary<string, object> sceneParameters;
     private string customSolverDomain;
@@ -86,11 +81,9 @@ public class ScenesCoordinator : MonoBehaviour
         byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
         /* upload test for drag and drop function */
 
-        string port = GetApiPort() + "/upload/pddl";
-        Debug.Log("testing the get upload api method" + port);
-        UnityWebRequest www = UnityWebRequest.Post(port, formData);
-	    //UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
-        //UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
+        //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
+	//UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
+        UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
 
         www.uploadHandler =  new UploadHandlerRaw(formSections);
 		www.SetRequestHeader("Content-Type", "multipart/form-data; boundary="+ Encoding.UTF8.GetString(boundary));
