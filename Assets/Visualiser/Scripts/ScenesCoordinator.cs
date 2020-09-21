@@ -27,7 +27,7 @@ public class ScenesCoordinator : MonoBehaviour
 {
     // External web config file (Sep 14, 2020)
     [DllImport("__Internal")]
-    private static extern string GetApiPort();
+    private static extern string GetUploadApi();
 
     public static ScenesCoordinator Coordinator;
     Dictionary<string, object> sceneParameters;
@@ -86,7 +86,7 @@ public class ScenesCoordinator : MonoBehaviour
         byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
         /* upload test for drag and drop function */
 
-        string port = GetApiPort() + "/upload/pddl";
+        string port = GetUploadApi();
         Debug.Log("testing the get upload api method" + port);
         UnityWebRequest www = UnityWebRequest.Post(port, formData);
 	    //UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
