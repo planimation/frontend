@@ -109,14 +109,23 @@ namespace Visualiser
         string filetype;
         bool waitReset;
         /** (May 17, 2020) Download Movie update **/
-        
+
+        // (Sep 15, 2020 Zhaoqi Fang), if UNITY_STANDALONE
+        int framerate = 25;
+        int shots = 1;
+        // if UNITY_STANDALONE, above
         
         // Intialization function 
         void Start()
         {
             // Reads visualisation file data
 		try{
-            var parameters = coordinator.FetchParameters("Visualisation") as string;
+                // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+                System.IO.Directory.CreateDirectory("ScreenshotFolder");
+                Time.captureFramerate = framerate;
+                // if UNITY_STANDALONE, above
+                var parameters = coordinator.FetchParameters("Visualisation") as string;
+                //Debug.Log("Parameters is:\n" + parameters);
             vf = parameters;
             // Creates a visual solution
             visualSolution = JsonUtility.FromJson<VisualSolutionObject>(parameters);
@@ -153,6 +162,8 @@ namespace Visualiser
 	            RenderSubgoals();
 	            RenderSteps();
 	            RenderFrame(visualStage);
+                // if UNITY_STANDALONE
+                Play();
 			}catch (Exception e){
 				//SceneManager.LoadScene("NetworkError");
 			}
@@ -322,14 +333,19 @@ namespace Visualiser
         {   
             // Plays animation
             if (playing && AreAllAnimationsFinished())
-            {   
-                
+            {
+                // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+                StartCoroutine(UploadPNG());
+                // if UNITY_STANDALONE, above
                 //Debug.Log("captured?  " + name);
 
                 if (visualSolution.IsFinalStage())
                 {
                     Pause();
-                    
+
+                    // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+                    UnityEngine.Application.Quit();
+                    // if UNITY_STANDALONE, above
                     /* (May 27, 2020) Movie download update */
                     if(this.filetype != null) 
                     {
@@ -384,6 +400,37 @@ namespace Visualiser
             DownloadPanelVFG.SetActive(false);
             /** (May 27, 2020) Movie download update **/
         }
+
+        // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+        IEnumerator UploadPNG()
+        {
+            yield return new WaitForEndOfFrame();
+            int width = Screen.width;
+            int height = Screen.height;
+
+            // get camer for capture at "headless" mode
+            var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+            var renderTexture = new RenderTexture(width, height, 24);
+            cam.targetTexture = renderTexture;
+            cam.Render();
+            cam.targetTexture = null;
+
+            RenderTexture.active = renderTexture;
+            var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+
+            tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            tex.Apply();
+            RenderTexture.active = null;
+
+            // Encode texture into PNG
+            byte[] bytes = tex.EncodeToPNG();
+            Destroy(tex);
+
+            System.IO.File.WriteAllBytes("ScreenshotFolder/shot" +
+                shots + ".png", bytes);
+            shots++;
+        }
+        // if UNITY_STANDALONE, above
 
         #region Stage Rendering
         // Renders a frame if it is not null
