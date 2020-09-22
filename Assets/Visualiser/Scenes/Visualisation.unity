@@ -309,7 +309,7 @@ RectTransform:
   m_GameObject: {fileID: 56983978}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.547123, y: 1.547123, z: 1.547123}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 2060375012}
   - {fileID: 1307314236}
@@ -320,9 +320,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 648, y: 364.5}
-  m_SizeDelta: {x: 837.6839, y: 471.1972}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &56983980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,7 +368,7 @@ Canvas:
   m_GameObject: {fileID: 56983978}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 2
+  m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -1987,7 +1987,7 @@ Canvas:
   m_GameObject: {fileID: 619898759}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 2
+  m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -2007,7 +2007,7 @@ RectTransform:
   m_GameObject: {fileID: 619898759}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.547123, y: 1.547123, z: 1.547123}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1219715876}
   m_Father: {fileID: 0}
@@ -2015,9 +2015,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 648, y: 364.5}
-  m_SizeDelta: {x: 837.6839, y: 471.1972}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!1 &635588965
 GameObject:
   m_ObjectHideFlags: 0
@@ -2093,8 +2093,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1671615179}
   m_HandleRect: {fileID: 1671615178}
   m_Direction: 2
-  m_Value: 0.9825783
-  m_Size: 0.44106784
+  m_Value: 0.70930153
+  m_Size: 0.38593656
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2881,7 +2881,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1892709628}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999997
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4160,7 +4160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000012564216}
+  m_AnchoredPosition: {x: 0, y: 0.0000022549148}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1177732694
@@ -5642,7 +5642,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000017028984, y: 0.0000039456727}
+  m_AnchoredPosition: {x: -0.00005564003, y: 0.000004174628}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1424636070
@@ -5756,7 +5756,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1535815279}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6138,7 +6138,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0000076293945, y: 4.257263}
+  m_AnchoredPosition: {x: -0.000022888184, y: 78.043396}
   m_SizeDelta: {x: -50.00006, y: 437.2}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1506522721
@@ -6994,7 +6994,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 379536515}
   m_HandleRect: {fileID: 379536514}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -7446,7 +7446,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1512770904}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -8092,7 +8092,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1362337019}
   m_HandleRect: {fileID: 1362337018}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -8868,8 +8868,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 709473116}
-        m_MethodName: RecordPlayback
-        m_Mode: 5
+        m_MethodName: DownloadPNG
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
