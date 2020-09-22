@@ -41,16 +41,16 @@ public class ScenesCoordinator : MonoBehaviour
     // Sep 15 2020 Zhaoqi Fang)
     // if UNITY_STANDALONE, get vfg from CLI, passi vfg and redirect to Visualisation Scene
     // Comment the following part of code if using WEBGL
-    private void Start()
-    {
-        var args = System.Environment.GetCommandLineArgs();
-        var reader = new StreamReader(args[1]);
-        string vfg = reader.ReadLine();
-        reader.Close();
-        Debug.Log("vfg is:\n" + vfg);
-        Coordinator.PushParameters("Visualisation", vfg);
-        SceneManager.LoadScene("Visualisation");
-    }
+    //private void Start()
+    //{
+    //    var args = System.Environment.GetCommandLineArgs();
+    //    var reader = new StreamReader(args[1]);
+    //    string vfg = reader.ReadLine();
+    //    reader.Close();
+    //    Debug.Log("vfg is:\n" + vfg);
+    //    Coordinator.PushParameters("Visualisation", vfg);
+    //    SceneManager.LoadScene("Visualisation");
+    //}
     // Comment the above part of code if using WEBGL
     private void Awake()
     {
@@ -69,6 +69,18 @@ public class ScenesCoordinator : MonoBehaviour
         return sceneParameters[sceneName];
     }
 
+    // @Sep 22, 2020 Zhaoqi Fang) check if parameters exists for file Download
+    public bool CheckParameters(string sceneName)
+    {
+        if (sceneParameters.ContainsKey(sceneName))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     // Adding the visualisation file to the visualiser scene
     public void PushParameters(string sceneName, object parameters)
     {
@@ -119,12 +131,45 @@ public class ScenesCoordinator : MonoBehaviour
     	if(www.isNetworkError || www.isHttpError) {
             SceneManager.LoadScene("NetworkError");
             Debug.Log(www.error);
-    	}
-    	else {
-    		//Debug.Log("Form upload complete!");
-    		Coordinator.PushParameters ("Visualisation", www.downloadHandler.text);
-    		SceneManager.LoadScene ("Visualisation");
-    	}
+		}
+		else {
+			//Debug.Log("Form upload complete!");
+			Coordinator.PushParameters ("Visualisation", www.downloadHandler.text);
+			SceneManager.LoadScene ("Visualisation");
+		}
+	}
+    // (Sep 21, 2020 Zhaoqi Fang) send vfg and required file format to backend
+    public void SendDownloadRequest(string fileType)
+    {
+        StartCoroutine(GenerateDownloader(fileType));
+    }
+
+    IEnumerator GenerateDownloader(string fileType)
+    {
+        // generate a unique boundary
+        byte[] boundary = UnityWebRequest.GenerateBoundary();
+        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+        string vfg = FetchParameters("Visualisation") as string;
+        formData.Add(new MultipartFormDataSection("vfg", vfg));
+        formData.Add(new MultipartFormDataSection("fileType", fileType));
+        // serialize form fileds into byte[] => requires a boundary to put in between fields
+        byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
+
+        UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/downloadVisualisation", formData);
+
+        www.uploadHandler = new UploadHandlerRaw(formSections);
+        www.SetRequestHeader("Content-Type", "multipart/form-data; boundary=" + Encoding.UTF8.GetString(boundary));
+        yield return www.SendWebRequest();
+        // Showing error scene if vfg error or experiencing network error
+        if (www.isNetworkError || www.isHttpError)
+        {
+            SceneManager.LoadScene("NetworkError");
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Coordinator.PushParameters("DownloadPlanimation", www.downloadHandler.data);
+        }
     }
 
     // Storing the doamin file in the coordinator

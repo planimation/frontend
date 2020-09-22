@@ -68,6 +68,10 @@ namespace Visualiser
         private static extern void OutputMP4();
         /** (May 17, 2020) Download Movie update **/
 
+        // (Sep 22, 2020 Zhaoqi Fang) Download File
+        [DllImport("__Internal")]
+        private static extern void ZipDownload(string data, string filename);
+
         // Static readonly fileds
         readonly static Color SubgoalImplementedColor = new Color(0f, 0.66666667f, 0.10980392f);
         readonly static Color StepButtonHighlightedColor = new Color(0.5613208f, 0.826122f, 1f);
@@ -121,8 +125,8 @@ namespace Visualiser
             // Reads visualisation file data
 		try{
                 // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-                System.IO.Directory.CreateDirectory("ScreenshotFolder");
-                Time.captureFramerate = framerate;
+                //System.IO.Directory.CreateDirectory("ScreenshotFolder");
+                //Time.captureFramerate = framerate;
                 // if UNITY_STANDALONE, above
                 var parameters = coordinator.FetchParameters("Visualisation") as string;
                 //Debug.Log("Parameters is:\n" + parameters);
@@ -163,7 +167,7 @@ namespace Visualiser
 	            RenderSteps();
 	            RenderFrame(visualStage);
                 // if UNITY_STANDALONE
-                Play();
+                //Play();
 			}catch (Exception e){
 				//SceneManager.LoadScene("NetworkError");
 			}
@@ -335,7 +339,7 @@ namespace Visualiser
             if (playing && AreAllAnimationsFinished())
             {
                 // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-                StartCoroutine(UploadPNG());
+                //StartCoroutine(UploadPNG());
                 // if UNITY_STANDALONE, above
                 //Debug.Log("captured?  " + name);
 
@@ -344,7 +348,7 @@ namespace Visualiser
                     Pause();
 
                     // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-                    UnityEngine.Application.Quit();
+                    //UnityEngine.Application.Quit();
                     // if UNITY_STANDALONE, above
                     /* (May 27, 2020) Movie download update */
                     if(this.filetype != null) 
@@ -401,35 +405,53 @@ namespace Visualiser
             /** (May 27, 2020) Movie download update **/
         }
 
-        // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-        IEnumerator UploadPNG()
+        /* (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip */
+        public void DownloadPNG()
         {
-            yield return new WaitForEndOfFrame();
-            int width = Screen.width;
-            int height = Screen.height;
-
-            // get camer for capture at "headless" mode
-            var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
-            var renderTexture = new RenderTexture(width, height, 24);
-            cam.targetTexture = renderTexture;
-            cam.Render();
-            cam.targetTexture = null;
-
-            RenderTexture.active = renderTexture;
-            var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
-
-            tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-            tex.Apply();
-            RenderTexture.active = null;
-
-            // Encode texture into PNG
-            byte[] bytes = tex.EncodeToPNG();
-            Destroy(tex);
-
-            System.IO.File.WriteAllBytes("ScreenshotFolder/shot" +
-                shots + ".png", bytes);
-            shots++;
+            coordinator.SendDownloadRequest("png");
+            StartCoroutine(WaitAndGetResponse());
         }
+
+        IEnumerator WaitAndGetResponse()
+        {
+            //yield return new WaitForSecondsRealtime(5);
+            yield return new WaitUntil(() => coordinator.CheckParameters("DownloadPlanimation") == true);
+            byte[] data = coordinator.FetchParameters("DownloadPlanimation") as byte[];
+            ZipDownload(System.Convert.ToBase64String(data), "planimation.zip");
+            DownloadPanelFull.SetActive(false);
+            DownloadPanelVFG.SetActive(false);
+        }
+        /** (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip **/
+
+        // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+        //IEnumerator UploadPNG()
+        //{
+        //    yield return new WaitForEndOfFrame();
+        //    int width = Screen.width;
+        //    int height = Screen.height;
+
+        //    // get camer for capture at "headless" mode
+        //    var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+        //    var renderTexture = new RenderTexture(width, height, 24);
+        //    cam.targetTexture = renderTexture;
+        //    cam.Render();
+        //    cam.targetTexture = null;
+
+        //    RenderTexture.active = renderTexture;
+        //    var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+
+        //    tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        //    tex.Apply();
+        //    RenderTexture.active = null;
+
+        //    // Encode texture into PNG
+        //    byte[] bytes = tex.EncodeToPNG();
+        //    Destroy(tex);
+
+        //    System.IO.File.WriteAllBytes("ScreenshotFolder/shot" +
+        //        shots + ".png", bytes);
+        //    shots++;
+        //}
         // if UNITY_STANDALONE, above
 
         #region Stage Rendering
