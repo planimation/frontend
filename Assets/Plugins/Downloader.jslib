@@ -19,10 +19,18 @@ var DownloaderPlugin ={
 mergeInto(LibraryManager.library, DownloaderPlugin);
 
 var ZipDownloaderPlugin = {
-    ZipDownload: function(str, fn) {
+    ZipDownload: function(str, fn, fileType) {
         var msg = Pointer_stringify(str);
         var fname = Pointer_stringify(fn);
-        var contentType = 'application/zip';
+        var contentType;
+        if(fileType == "png"){
+            contentType = "application/zip";
+        } else if (fileType == "webm"){
+            contentType = "video/webm";
+        } else if (fileType == "gif"){
+            contentType = "image/gif";
+        }
+        
         function fixBinary (bin)
         {
             var length = bin.length;

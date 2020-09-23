@@ -70,7 +70,7 @@ namespace Visualiser
 
         // (Sep 22, 2020 Zhaoqi Fang) Download File
         [DllImport("__Internal")]
-        private static extern void ZipDownload(string data, string filename);
+        private static extern void ZipDownload(string data, string filename, string filetype);
 
         // Static readonly fileds
         readonly static Color SubgoalImplementedColor = new Color(0f, 0.66666667f, 0.10980392f);
@@ -168,8 +168,11 @@ namespace Visualiser
 	            RenderFrame(visualStage);
                 // if UNITY_STANDALONE
                 //Play();
-			}catch (Exception e){
-				//SceneManager.LoadScene("NetworkError");
+            }
+            catch (Exception e){
+                //SceneManager.LoadScene("NetworkError");
+                // (Sep 22, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+                //UnityEngine.Application.Quit();
 			}
         }
 
@@ -351,7 +354,7 @@ namespace Visualiser
                     //UnityEngine.Application.Quit();
                     // if UNITY_STANDALONE, above
                     /* (May 27, 2020) Movie download update */
-                    if(this.filetype != null) 
+                    if (this.filetype != null) 
                     {
                         if(this.filetype == "gif") 
                         {
@@ -406,9 +409,10 @@ namespace Visualiser
         }
 
         /* (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip */
-        public void DownloadPNG()
+        public void DownloadPNG(string filetype)
         {
-            coordinator.SendDownloadRequest("png");
+            this.filetype = filetype;
+            coordinator.SendDownloadRequest(this.filetype);
             StartCoroutine(WaitAndGetResponse());
         }
 
@@ -417,41 +421,51 @@ namespace Visualiser
             //yield return new WaitForSecondsRealtime(5);
             yield return new WaitUntil(() => coordinator.CheckParameters("DownloadPlanimation") == true);
             byte[] data = coordinator.FetchParameters("DownloadPlanimation") as byte[];
-            ZipDownload(System.Convert.ToBase64String(data), "planimation.zip");
+            string filename;
+            if(filetype == "png")
+            {
+                filename = "planimaiton.zip";
+            }
+            else
+            {
+                filename = "planimation." + filetype;
+            }
+            ZipDownload(System.Convert.ToBase64String(data), filename, filetype);
             DownloadPanelFull.SetActive(false);
             DownloadPanelVFG.SetActive(false);
+            coordinator.RemoveParameters("DownloadPlanimation");
         }
         /** (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip **/
 
         // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-        //IEnumerator UploadPNG()
-        //{
-        //    yield return new WaitForEndOfFrame();
-        //    int width = Screen.width;
-        //    int height = Screen.height;
+        IEnumerator UploadPNG()
+        {
+            yield return new WaitForEndOfFrame();
+            int width = Screen.width;
+            int height = Screen.height;
 
-        //    // get camer for capture at "headless" mode
-        //    var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
-        //    var renderTexture = new RenderTexture(width, height, 24);
-        //    cam.targetTexture = renderTexture;
-        //    cam.Render();
-        //    cam.targetTexture = null;
+            // get camer for capture at "headless" mode
+            var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+            var renderTexture = new RenderTexture(width, height, 24);
+            cam.targetTexture = renderTexture;
+            cam.Render();
+            cam.targetTexture = null;
 
-        //    RenderTexture.active = renderTexture;
-        //    var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+            RenderTexture.active = renderTexture;
+            var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
 
-        //    tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-        //    tex.Apply();
-        //    RenderTexture.active = null;
+            tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            tex.Apply();
+            RenderTexture.active = null;
 
-        //    // Encode texture into PNG
-        //    byte[] bytes = tex.EncodeToPNG();
-        //    Destroy(tex);
+            // Encode texture into PNG
+            byte[] bytes = tex.EncodeToPNG();
+            Destroy(tex);
 
-        //    System.IO.File.WriteAllBytes("ScreenshotFolder/shot" +
-        //        shots + ".png", bytes);
-        //    shots++;
-        //}
+            System.IO.File.WriteAllBytes("ScreenshotFolder/shot" +
+                shots + ".png", bytes);
+            shots++;
+        }
         // if UNITY_STANDALONE, above
 
         #region Stage Rendering
