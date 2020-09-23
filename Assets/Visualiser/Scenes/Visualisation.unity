@@ -2093,8 +2093,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1671615179}
   m_HandleRect: {fileID: 1671615178}
   m_Direction: 2
-  m_Value: 0.70930153
-  m_Size: 0.38593656
+  m_Value: 0
+  m_Size: 0.38593653
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4160,7 +4160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0000022549148}
+  m_AnchoredPosition: {x: 0.000045776367, y: -0.000016944774}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1177732694
@@ -5642,7 +5642,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00005564003, y: 0.000004174628}
+  m_AnchoredPosition: {x: -0.00004921766, y: 0.0000046269474}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1424636070
@@ -5913,7 +5913,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.13333334, g: 0.28235295, b: 0.47058827, a: 1}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -5926,9 +5926,9 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 26.991467
+  field of view: 43.155857
   orthographic: 1
-  orthographic size: 365.47632
+  orthographic size: 570.4295
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5951,7 +5951,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1446542284}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 648, y: 364, z: -10}
+  m_LocalPosition: {x: 761, y: 367, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -6138,7 +6138,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000022888184, y: 78.043396}
+  m_AnchoredPosition: {x: -0.000022888184, y: 268.4686}
   m_SizeDelta: {x: -50.00006, y: 437.2}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1506522721
@@ -6533,7 +6533,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 709473116}
-        m_MethodName: RecordPlayback
+        m_MethodName: DownloadPNG
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7445,7 +7445,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1512770905}
   m_HandleRect: {fileID: 1512770904}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -7826,7 +7826,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 709473116}
-        m_MethodName: RecordPlayback
+        m_MethodName: DownloadPNG
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8092,7 +8092,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1362337019}
   m_HandleRect: {fileID: 1362337018}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -8869,7 +8869,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 709473116}
         m_MethodName: DownloadPNG
-        m_Mode: 1
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

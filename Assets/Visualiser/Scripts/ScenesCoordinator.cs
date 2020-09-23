@@ -75,6 +75,16 @@ public class ScenesCoordinator : MonoBehaviour
             return false;
         }
     }
+
+    // (Sep 23, 2020 Zhaoqi Fang) remove parameters
+    public void RemoveParameters(string sceneName)
+    {
+        if (sceneParameters.ContainsKey(sceneName))
+        {
+            sceneParameters.Remove(sceneName);
+        }
+    }
+
     // Adding the visualisation file to the visualiser scene
     public void PushParameters(string sceneName, object parameters)
     {
