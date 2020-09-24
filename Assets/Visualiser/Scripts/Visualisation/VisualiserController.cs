@@ -424,7 +424,7 @@ namespace Visualiser
             string filename;
             if(filetype == "png")
             {
-                filename = "planimaiton.zip";
+                filename = "planimation.zip";
             }
             else
             {
