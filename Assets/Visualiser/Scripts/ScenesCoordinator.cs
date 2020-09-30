@@ -89,8 +89,6 @@ public class ScenesCoordinator : MonoBehaviour
         string port = GetUploadApi();
         Debug.Log("testing the get upload api method" + port);
         UnityWebRequest www = UnityWebRequest.Post(port, formData);
-	    //UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
-        //UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
 
         www.uploadHandler =  new UploadHandlerRaw(formSections);
 		www.SetRequestHeader("Content-Type", "multipart/form-data; boundary="+ Encoding.UTF8.GetString(boundary));
