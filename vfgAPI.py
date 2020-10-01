@@ -2,6 +2,7 @@ import getopt, sys
 import requests
 import json
 import base64
+import os.path
 
 
 # helper function to read vfg file
@@ -16,7 +17,10 @@ def getPNG(VFGfile,URL):
 	vfgFile = readFile(VFGfile)
 	files =(('vfg', (None,vfgFile)), ('fileType',(None,'png')))
 	r = requests.post(URL,files=files)
-	open('planimation.zip','wb').write(r.content)
+	i=0
+	while os.path.isfile("planimation"+str(i)+".zip"):
+		i+=1
+	open('planimation'+str(i)+'.zip','wb').write(r.content)
 	print("download is complete")
 # API to download webm file
 def getWebM(VFGfile,URL):
@@ -24,7 +28,10 @@ def getWebM(VFGfile,URL):
 	vfgFile = readFile(VFGfile)
 	files =(('vfg', (None,vfgFile)), ('fileType',(None,'webm')))
 	r = requests.post(URL,files=files)
-	open('planimation.webm','wb').write(r.content)
+	i=0
+	while os.path.isfile("planimation"+str(i)+".webm"):
+		i+=1
+	open('planimation'+str(i)+'.webm','wb').write(r.content)
 	print("download is complete")
 # API to dwonload zip file
 def getGIF(VFGfile,URL):
@@ -32,7 +39,10 @@ def getGIF(VFGfile,URL):
 	vfgFile = readFile(VFGfile)
 	files =(('vfg', (None,vfgFile)), ('fileType',(None,'gif')))
 	r = requests.post(URL,files=files)
-	open('planimation.gif','wb').write(r.content)
+	i=0
+	while os.path.isfile("planimation"+str(i)+".gif"):
+		i+=1
+	open('planimation'+str(i)+'.gif','wb').write(r.content)
 	print("download is complete")
 
 # remove 1st argument
