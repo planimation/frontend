@@ -56,7 +56,7 @@ try:
 
 		elif cArgument in ("-i", "--inputfile"):
 			print ("Displaying input value: " + cValue)
-			inputfile = readFile(cValue)
+			inputfile = cValue
 					
 
 		elif cArgument in ("-o","--outputmethod"):
