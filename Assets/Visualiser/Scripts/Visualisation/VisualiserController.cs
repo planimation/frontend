@@ -115,8 +115,9 @@ namespace Visualiser
         /** (May 17, 2020) Download Movie update **/
 
         // (Sep 15, 2020 Zhaoqi Fang), if UNITY_STANDALONE
-        int framerate = 25;
+        int framerate = 1;
         int shots = 1;
+        bool renderFinished = false;
         // if UNITY_STANDALONE, above
         
         // Intialization function 
@@ -166,16 +167,22 @@ namespace Visualiser
 	            RenderSubgoals();
 	            RenderSteps();
 	            RenderFrame(visualStage);
-                // if UNITY_STANDALONE
-                //Play();
+                // (Oct 12, 2020 Zhaoqi Fang) Update screenshot for initial state
+                //StartCoroutine(WaitRender());
             }
             catch (Exception e){
                 //SceneManager.LoadScene("NetworkError");
                 // (Sep 22, 2020 Zhaoqi Fang) if UNITY_STANDALONE
                 //UnityEngine.Application.Quit();
-			}
+            }
         }
 
+        IEnumerator WaitRender()
+        {
+            yield return new WaitUntil(() => renderFinished == true);
+            StartCoroutine(UploadPNG());
+            Play();
+        }
 
         // This function is used to render subgoals from the solutionobject
         public void RenderSubgoals()
@@ -341,11 +348,7 @@ namespace Visualiser
             // Plays animation
             if (playing && AreAllAnimationsFinished())
             {
-                // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-                //StartCoroutine(UploadPNG());
-                // if UNITY_STANDALONE, above
                 //Debug.Log("captured?  " + name);
-
                 if (visualSolution.IsFinalStage())
                 {
                     Pause();
@@ -380,6 +383,11 @@ namespace Visualiser
                 }
                 else
                 {
+                    // (Oct 12, 2020 Zhaoqi Fang) if UNITY_STANDALONE, update screenshot
+                    //Pause();
+                    //StartCoroutine(UploadPNG());
+                    //Play();
+                    // if UNITY_STANDALONE, above
                     PresentNextStage();
                 }
             }
@@ -495,6 +503,8 @@ namespace Visualiser
             // Update visual sprites.
             // Including create, update, remove visual sprites and manage subgoal status
             UpdateVisualSprites(visualStage, subgoalObjectNames);
+            // if unity_standalone
+            renderFinished = true;
         }
 
         // Update buttons highlighting status
