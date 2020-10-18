@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146683329-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-146683329-1');
+    </script>
+    <meta charset="utf-8">
+    <title>Planimation</title>
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+    <!-- changed bootstrap version from 4.0.0 to 4.4.1 --> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/1e718c6e63.js" crossorigin="anonymous"></script>
+    <style>
+      body { margin: 0; }
+      #gameContainer { width: 100vw; height: 100vh; }
+      canvas { width: 100%; height: 100%; }
+    </style>
+    <script src="Build/UnityLoader.js"></script>
+    <script>
+      var domText="";
+      var probText="";
+      var animateText="";
+      var planText="";
+      var solverURL="";
+
+      function UnityProgress(gameObject, progress) {
+          if (progress == 1){
+            console.log("Unity Load Successful");
+            window.parent.postMessage({"action":"loadfile"}, "*");    
+          }
+      }
+
+      var gameInstance = UnityLoader.instantiate("gameContainer", "Build/buildweb.json",{onProgress: UnityProgress});
+    
+      function solve(){
+        gameInstance.SendMessage("Coordinator","planimationPlugin");
+        gameInstance.SendMessage("Coordinator","setDomain",domText);
+        gameInstance.SendMessage("Coordinator","setProblem",probText);
+        gameInstance.SendMessage("Coordinator","setAnimation",animateText);
+        gameInstance.SendMessage("Coordinator","setPlan",planText);
+        gameInstance.SendMessage("Coordinator","setCustomSolver",solverURL);
+        gameInstance.SendMessage("Coordinator","uploadallfile");
+      }
+
+      window.addEventListener('message',function(event) {
+        if (event.data.domText){           
+          domText=event.data.domText;
+          probText=event.data.probText;
+          animateText=event.data.animateText;
+          planText=event.data.planText;
+          solverURL=event.data.solverURL;
+          solve();
+        }
+      },false);
+    </script>
+    <!-- (Apr 23, 2020) Drag and Drop update: added script -->
+    <script type="text/javascript" src="dragdrop.js"></script>
+    <!-- (May 17, 2020) Movie download update: added script -->
+    <script type="text/javascript" src="downloadMovie.js"></script>
+    <!-- (Sep 8, 2020) Image download update: added script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"> </script>
+    <script src="https://cdn.webrtc-experiment.com/screenshot.js"> </script>
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"> </script>
+  </head>
+
+  <body>
+    <div id="gameContainer"></div>    
+    <!-- [start] (May 14, 2020) - Jayan Drag and Drop update -->
+    <!-- modal section for file type input -->
+    <a href="#modal-01" id="modal-open" data-toggle="modal" data-target="#modal-01"></a>
+
+    <!-- Upload file modal -->
+    <div class="modal" tabindex="-1" role="dialog" id="modal-01">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-file-upload"></i> Upload Multiple PDDL Files</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="modal-close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div id="upload_error_msg"></div>
+
+            <div class="table-responsive">
+              <table class="table mt-3">
+                <thead class="">
+                  <tr class="text-center table-light text-capitalize">
+                    <th scope="col"></th>
+                    <th scope="col">File Name</th>
+                    <th scope="col">Select file Type</th>
+                  </tr>
+                </thead>
+                <tbody id="file-type">       
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="container-fluid text-right">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-cancel">Cancel</button>
+              <button type="button" class="btn btn-primary" id="modal-submit"><i class="fas fa-upload"></i> Upload</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Alert Modal -->
+    <div class="modal fade" id="modal_alert" tabindex="-1" role="dialog" aria-labelledby="modal_alertTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal_alertTitle">
+                <i class="fas fa-exclamation-triangle text-danger"></i> 
+                <span id="alert_title" class="text-uppercase"></span>
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="alert" class="container-fluid">
+              <p id="alert_msg"></p>
+            </div>  
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+    <!-- changed bootstrap version from 4.0.0 to 4.4.1 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <!-- [end] (May 14, 2020) Drag and Drop update -->
+  </body>
+</html>
