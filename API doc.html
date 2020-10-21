@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>api.planning.domains</title>
+    <title>api.planimation</title>
 
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Vollkorn:400italic,400,700' rel='stylesheet' type='text/css'>
@@ -57,29 +57,29 @@
                         Planimation with user interface can accessed through
                         <a href="https://planimation.planning.domains/">
                             here.
-                        </a> Planimation API supports the same functionality that 
+                        </a> Planimation API supports the same functionality that
                         the user interface supports.
                     </p>
 
                     <p>
                         Planimation currently works in 2 ways. The user can sumbit either
-                        3 PDDL files, which express the domain, problem and animation 
+                        3 PDDL files, which express the domain, problem and animation
                         profile respectively, or 1 VFG file and a receive a certain format
-                        of visualisation (so far, GIF, PNG, WEBM and MP4 are supported). 
-                        VFG is a special type of file which records how a solution is 
-                        visualised. It is recommeded to always keep this file so that 
-                        if the user ever needs a different format of visualisation, he can 
+                        of visualisation (so far, GIF, PNG, WEBM and MP4 are supported).
+                        VFG is a special type of file which records how a solution is
+                        visualised. It is recommeded to always keep this file so that
+                        if the user ever needs a different format of visualisation, he can
                         submit this VFG file directly without needing to solve the original problem again.
                     </p>
 
 
                 </div>
 
-                <div class="col-md-6">                 
+                <div class="col-md-6">
 
                     <p>
                         <strong>Disclaimer</strong>: The API should be considered to
-                        be in a very alpha phase at the moment. It's not expected to deal 
+                        be in a very alpha phase at the moment. It's not expected to deal
                         with heavy traffic and the error messages may not be complete.
                         Until this disclaimer is removed, we do not recommend
                         using the API for official business (academic or otherwise).
@@ -158,15 +158,15 @@ print(result) // display the name of received file
 
                     <p>
                         The <code>planimation.py</code> command-line utility provides exactly same
-                        functionalities as the <code>planning_domains_api.py</code> library:
+                        functionalities as the <code>planimation_api.py</code> library:
                     </p>
 
                     <pre id="command-line-usage" class="prettyprint">
-> ./planning.domains.py
+> ./planimation.py
 
- planning.domains.py submitPDDL [path of domain] [path of problem] [path of animation profile] [output format]                 Submit 3 PDDL files which corresponds to domain, problem, animation profile respectively and receive response in one of 5 supported formats (VFG, PNG, GIF, WEBM, MP4)
+ planimation.py submitPDDL [path of domain] [path of problem] [path of animation profile] [output format]                 Submit 3 PDDL files which corresponds to domain, problem, animation profile respectively and receive response in one of 5 supported formats (VFG, PNG, GIF, WEBM, MP4)
 
- planning.domains.py submitVFG  [path of VFG] [output format]                Submit a VFG file and receive response in one of 4 supported formats (PNG, GIF, WEBM, MP4)
+ planimation.py submitVFG  [path of VFG] [output format]                Submit a VFG file and receive response in one of 4 supported formats (PNG, GIF, WEBM, MP4)
                     </pre>
 
                 </div>
