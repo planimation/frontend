@@ -177,8 +177,10 @@ public class ScenesCoordinator : MonoBehaviour
             Debug.Log(www.error);
         }
         else
-        {
+        {  
             Coordinator.PushParameters("DownloadPlanimation", www.downloadHandler.data);
+            
+            
         }
     }
 
