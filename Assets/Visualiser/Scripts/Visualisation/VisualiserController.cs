@@ -119,7 +119,7 @@ namespace Visualiser
         int shots = 1;
         bool renderFinished = false;
         // if UNITY_STANDALONE, above
-        
+    
         // Intialization function 
         void Start()
         {
@@ -422,6 +422,7 @@ namespace Visualiser
             this.filetype = filetype;
             coordinator.SendDownloadRequest(this.filetype);
             StartCoroutine(WaitAndGetResponse());
+
         }
 
         IEnumerator WaitAndGetResponse()
@@ -442,6 +443,10 @@ namespace Visualiser
             DownloadPanelFull.SetActive(false);
             DownloadPanelVFG.SetActive(false);
             coordinator.RemoveParameters("DownloadPlanimation");
+
+            // close downloading object after download finished
+            GameObject.Find("ImageDownload").SetActive(false);
+
         }
         /** (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip **/
 
