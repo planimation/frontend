@@ -14,6 +14,7 @@
 /* The scenes coordinator manages parameters that are passing through different scenes, including
  * all the uploaded files and the visualisation file*/
 using UnityEngine;
+using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
@@ -24,13 +25,18 @@ using Visualiser;
 
 public class ScenesCoordinator : MonoBehaviour
 {
+    // External web config file (Sep 14, 2020)
+    [DllImport("__Internal")]
+    private static extern string GetUploadApi();
+
     public static ScenesCoordinator Coordinator;
     Dictionary<string, object> sceneParameters;
     private string customSolverDomain;
-	private string domaintxt;
-	private string problemtxt;
+    private string domaintxt;
+    private string problemtxt;
     //" " means no plan has been uploaded
     private string plantxt=" ";
+
 	private string animationprofile;
 
     // £¨Sep 15 2020 Zhaoqi Fang)
@@ -47,6 +53,7 @@ public class ScenesCoordinator : MonoBehaviour
     //    SceneManager.LoadScene("Visualisation");
     //}
     // Comment the above part of code if using WEBGL
+
     private void Awake()
     {
         if (Coordinator == null)
@@ -57,7 +64,8 @@ public class ScenesCoordinator : MonoBehaviour
 
         sceneParameters = new Dictionary<string, object>();
     }
-	// Retrieving the visualisation file
+
+    // Retrieving the visualisation file
     public object FetchParameters(string sceneName)
     {
         return sceneParameters[sceneName];
@@ -91,44 +99,49 @@ public class ScenesCoordinator : MonoBehaviour
         sceneParameters.Add(sceneName, parameters);
     }
 
-	// Interface for other objects to use 
-	public void uploadVF(){
-		SceneManager.LoadScene ("Visualisation");
-	}
+    // Interface for other objects to use 
+    public void uploadVF(){
+    	SceneManager.LoadScene ("Visualisation");
+    }
     public void planimationPlugin()
     {
         SceneManager.LoadScene("planimationPlugin");
     }
-	// Interface for other objects to use 
-	public void uploadallfile(){
-		StartCoroutine (generateVisualiser ());
-	}
+    // Interface for other objects to use 
+    public void uploadallfile(){
+    	StartCoroutine (generateVisualiser ());
+    } 
 
-	// Make a POST request to the server for the visualiser file
-	IEnumerator generateVisualiser(){
-		//generate a unique boundary
-		byte[] boundary = UnityWebRequest.GenerateBoundary();       
+    // Make a POST request to the server for the visualiser file
+    IEnumerator generateVisualiser(){
+    	//generate a unique boundary
+    	byte[] boundary = UnityWebRequest.GenerateBoundary();       
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-		formData.Add( new MultipartFormDataSection("domain",domaintxt ));
-		formData.Add( new MultipartFormDataSection("problem",problemtxt ));
-		formData.Add( new MultipartFormDataSection("animation",animationprofile ));
+    	formData.Add( new MultipartFormDataSection("domain",domaintxt ));
+    	formData.Add( new MultipartFormDataSection("problem",problemtxt ));
+    	formData.Add( new MultipartFormDataSection("animation",animationprofile ));
         formData.Add(new MultipartFormDataSection("plan", plantxt));
         formData.Add(new MultipartFormDataSection("url", customSolverDomain));
         //serialize form fields into byte[] => requires a bounday to put in between fields
         byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
         /* upload test for drag and drop function */
 
-        UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
-	//UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
+        //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
+	    //UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
         //UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
 
+        string port = GetUploadApi();
+        Debug.Log("testing the get upload api method" + port);
+        UnityWebRequest www = UnityWebRequest.Post(port, formData);
+
         www.uploadHandler =  new UploadHandlerRaw(formSections);
-		www.SetRequestHeader("Content-Type", "multipart/form-data; boundary="+ Encoding.UTF8.GetString(boundary));
-		yield return www.SendWebRequest();
-		// Showing error scene if plan are not found or experiencing network error
-		if(www.isNetworkError || www.isHttpError) {
+    	www.SetRequestHeader("Content-Type", "multipart/form-data; boundary="+ Encoding.UTF8.GetString(boundary));
+    	yield return www.SendWebRequest();
+    	// Showing error scene if plan are not found or experiencing network error
+    	if(www.isNetworkError || www.isHttpError) {
             SceneManager.LoadScene("NetworkError");
             Debug.Log(www.error);
+
 		}
 		else {
 			//Debug.Log("Form upload complete!");
@@ -172,18 +185,18 @@ public class ScenesCoordinator : MonoBehaviour
         }
     }
 
-	// Storing the doamin file in the coordinator
-	public void setDomain(string domain){
-		this.domaintxt = domain;
-	}
-	// Storing the problem file in the coordinator
-	public void setProblem(string problem){
-		this.problemtxt = problem;
-	}
-	// Storing the aniamation profile in the coordinator
-	public void setAnimation(string animation){
-		this.animationprofile = animation;
-	}
+    // Storing the doamin file in the coordinator
+    public void setDomain(string domain){
+    	this.domaintxt = domain;
+    }
+    // Storing the problem file in the coordinator
+    public void setProblem(string problem){
+    	this.problemtxt = problem;
+    }
+    // Storing the aniamation profile in the coordinator
+    public void setAnimation(string animation){
+    	this.animationprofile = animation;
+    }
     // Storing the plan file in the coordinator
     public void setPlan(string plan)
     {
