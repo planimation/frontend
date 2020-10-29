@@ -172,6 +172,9 @@ namespace Visualiser
             }
             catch (Exception e){
                 //SceneManager.LoadScene("NetworkError");
+                // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+                //UnityEngine.Application.Quit();
+                // if UNITY_STANDALONE, above
             }
         }
 
