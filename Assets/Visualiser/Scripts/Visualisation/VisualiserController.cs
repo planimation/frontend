@@ -172,8 +172,6 @@ namespace Visualiser
             }
             catch (Exception e){
                 //SceneManager.LoadScene("NetworkError");
-                // (Sep 22, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-                //UnityEngine.Application.Quit();
             }
         }
 
@@ -458,18 +456,18 @@ namespace Visualiser
             int height = Screen.height;
 
             // get camer for capture at "headless" mode
-            var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
-            var renderTexture = new RenderTexture(width, height, 24);
-            cam.targetTexture = renderTexture;
-            cam.Render();
-            cam.targetTexture = null;
+            //var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+            //var renderTexture = new RenderTexture(width, height, 24);
+            //cam.targetTexture = renderTexture;
+            //cam.Render();
+            //cam.targetTexture = null;
 
-            RenderTexture.active = renderTexture;
+            //RenderTexture.active = renderTexture;
             var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
 
             tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
             tex.Apply();
-            RenderTexture.active = null;
+            //RenderTexture.active = null;
 
             // Encode texture into PNG
             byte[] bytes = tex.EncodeToPNG();
