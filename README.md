@@ -20,6 +20,82 @@ Latest Development Build Status
 
 - Test the web server is running by visiting `localhost:8080` in the browser.
 
+## Instruction for Building Unity Linux Standalone
+
+Instruction for building unity linux standalone if frontend animation update in the future
+
+### Local Dev
+
+Clone the frontend repository and open it in ***Unity 2018.2.10f1***
+
+#### Code Adjustment
+
+1. In ***Assets/Visualiser/Scriptes/ScenesCoordinator.cs***, uncomment the following code section from line 45-54
+
+    ```C#
+    private void Start()
+    {
+        var args = System.Environment.GetCommandLineArgs();
+        var reader = new StreamReader(args[1]);
+        string vfg = reader.ReadLine();
+        reader.Close();
+        Debug.Log("vfg is:\n" + vfg);
+        Coordinator.PushParameters("Visualisation", vfg);
+        SceneManager.LoadScene("Visualisation");
+    }
+
+    ```
+
+2. In ***Assets/Visualiser/Visualisation/VisualiserController.cs***, uncomment the following code section
+    - line 129-130
+
+    ```C#
+    System.IO.Directory.CreateDirectory("ScreenshotFolder");
+    Time.captureFramerate = framerate;
+    ```
+
+    - line 171
+
+    ```C#
+    StartCoroutine(WaitRender());
+    ```
+
+    - line 176
+
+    ```C#
+    UnityEngine.Application.Quit();
+    ```
+
+    - line 358
+
+    ```C#
+    UnityEngine.Application.Quit();
+    ```
+
+    - line 388-390
+
+    ```C#
+    Pause();
+    StartCoroutine(UploadPNG());
+    Play();
+    ```
+
+#### Build Setting
+
+1. Select Planform as ***PC, Mac & Linux Standalone***
+
+2. Choose Target Platform as ***Linux***, and Architecture as ***x86 + x86_64 (Universal)***
+
+3. Open the ***Player Setting***, make sure the ***Display Resolution Dialog*** is selected as ***Disabled***
+
+4. Build the standalone player inside a foler named ***linux_build*** and make sure the filename is ***linux_standalone.x86***
+
+5. Place ***linux_build*** under the [backend](https://github.com/planimation/backend) ***backend/server*** and make ***linux_standalone.x86_64*** executable
+
+    ```Shell
+    sudo chmod +x linux_standalone.x86_64
+    ```
+
 ## Contribution
 
 When contributing to this repository, please adhere to the below guidelines.
