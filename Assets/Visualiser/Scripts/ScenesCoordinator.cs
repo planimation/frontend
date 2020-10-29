@@ -27,7 +27,7 @@ public class ScenesCoordinator : MonoBehaviour
 {
     // External web config file (Sep 14, 2020)
     [DllImport("__Internal")]
-    private static extern string GetUploadApi();
+    private static extern string GetUploadApi(string api_url);
 
     public static ScenesCoordinator Coordinator;
     Dictionary<string, object> sceneParameters;
@@ -124,15 +124,13 @@ public class ScenesCoordinator : MonoBehaviour
       byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
       /* upload test for drag and drop function */
 
-      string port = GetUploadApi();
+      //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
+    //UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
+      //UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
+
+      string port = GetUploadApi("/upload/pddl");
       Debug.Log("testing the get upload api method" + port);
       UnityWebRequest www = UnityWebRequest.Post(port, formData);
-      // download sequential PNG, add javascript lib in index.html and changes in downloadMovie.js
-
-      // UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
-       //UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
-      //UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
-      // download sequential PNG, add javascript lib in index.html and changes in downloadMovie.js
 
       www.uploadHandler =  new UploadHandlerRaw(formSections);
     	www.SetRequestHeader("Content-Type", "multipart/form-data; boundary="+ Encoding.UTF8.GetString(boundary));
@@ -165,7 +163,10 @@ public class ScenesCoordinator : MonoBehaviour
         // serialize form fileds into byte[] => requires a boundary to put in between fields
         byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
 
-        UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/downloadVisualisation", formData);
+        //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/downloadVisualisation", formData);
+        string port = GetUploadApi("/downloadVisualisation");
+        Debug.Log("testing the get api method" + port);
+        UnityWebRequest www = UnityWebRequest.Post(port, formData);
 
         www.uploadHandler = new UploadHandlerRaw(formSections);
         www.SetRequestHeader("Content-Type", "multipart/form-data; boundary=" + Encoding.UTF8.GetString(boundary));
@@ -177,10 +178,10 @@ public class ScenesCoordinator : MonoBehaviour
             Debug.Log(www.error);
         }
         else
-        {  
+        {
             Coordinator.PushParameters("DownloadPlanimation", www.downloadHandler.data);
-            
-            
+
+
         }
     }
 
