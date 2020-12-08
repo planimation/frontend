@@ -20,77 +20,23 @@ Latest Development Build Status
 
 - Test the web server is running by visiting `localhost:8080` in the browser.
 
-## Instruction for Building Unity Linux Standalone
+## Build Unity Linux Standalone
 
-Instruction for building unity linux standalone if frontend animation update in the future
+This standalone is used for backend only. For frontend build, see [here]
 
-### Local Dev
+### Steps
 
-Clone the frontend repository and open it in ***Unity 2018.2.10f1***
+1. Clone the frontend repository and open it in ***Unity 2018.2.10f1***
 
-#### Code Adjustment
+2. Select Platform as ***PC, Mac & Linux Standalone***
 
-1. In ***Assets/Visualiser/Scriptes/ScenesCoordinator.cs***, uncomment the following code section from line 45-54
+3. Choose Target Platform as ***Linux***, and Architecture as ***x86 + x86_64 (Universal)***
 
-    ```C#
-    private void Start()
-    {
-        var args = System.Environment.GetCommandLineArgs();
-        var reader = new StreamReader(args[1]);
-        string vfg = reader.ReadLine();
-        reader.Close();
-        Debug.Log("vfg is:\n" + vfg);
-        Coordinator.PushParameters("Visualisation", vfg);
-        SceneManager.LoadScene("Visualisation");
-    }
+4. Open the ***Player Setting***, make sure ***Display Resolution Dialog*** is selected as ***Disabled***
 
-    ```
+5. Build the standalone player inside a folder named ***linux_build*** and make sure the executable is named ***linux_standalone.x86***
 
-2. In ***Assets/Visualiser/Visualisation/VisualiserController.cs***, uncomment the following code section
-    - line 129-130
-
-    ```C#
-    System.IO.Directory.CreateDirectory("ScreenshotFolder");
-    Time.captureFramerate = framerate;
-    ```
-
-    - line 171
-
-    ```C#
-    StartCoroutine(WaitRender());
-    ```
-
-    - line 176
-
-    ```C#
-    UnityEngine.Application.Quit();
-    ```
-
-    - line 358
-
-    ```C#
-    UnityEngine.Application.Quit();
-    ```
-
-    - line 388-390
-
-    ```C#
-    Pause();
-    StartCoroutine(UploadPNG());
-    Play();
-    ```
-
-#### Build Setting
-
-1. Select Planform as ***PC, Mac & Linux Standalone***
-
-2. Choose Target Platform as ***Linux***, and Architecture as ***x86 + x86_64 (Universal)***
-
-3. Open the ***Player Setting***, make sure the ***Display Resolution Dialog*** is selected as ***Disabled***
-
-4. Build the standalone player inside a foler named ***linux_build*** and make sure the filename is ***linux_standalone.x86***
-
-5. Place ***linux_build*** under the [backend](https://github.com/planimation/backend) ***backend/server*** and make ***linux_standalone.x86_64*** executable
+6. Place ***linux_build*** folder under the [backend](https://github.com/planimation/backend) ***backend/server*** and make ***linux_standalone.x86_64*** executable by doing
 
     ```Shell
     sudo chmod +x linux_standalone.x86_64
@@ -141,3 +87,6 @@ Before pushing the code to repo please make sure to:
 - Create a PR and add at least one peer reviewer.
 - You may merge your branch to `develop` once your PR is approved by your peer reviewer.
 - If you do not have permission to merge the PR, please contact the reviewer to merge it for you.
+
+[//]: #
+   [here]:<https://planimation.github.io/documentation/deployment_guide/>
