@@ -41,7 +41,6 @@ public class ScenesCoordinator : MonoBehaviour
 
     // £¨Sep 15 2020 Zhaoqi Fang)
     // if UNITY_STANDALONE, get vfg from CLI, passi vfg and redirect to Visualisation Scene
-    // Comment the following part of code if using WEBGL
 #if UNITY_STANDALONE_LINUX
     private void Start()
     {
@@ -54,7 +53,6 @@ public class ScenesCoordinator : MonoBehaviour
         SceneManager.LoadScene("Visualisation");
     }
 #endif
-    // Comment the above part of code if using WEBGL
 
     private void Awake()
     {
