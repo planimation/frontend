@@ -42,16 +42,18 @@ public class ScenesCoordinator : MonoBehaviour
     // £¨Sep 15 2020 Zhaoqi Fang)
     // if UNITY_STANDALONE, get vfg from CLI, passi vfg and redirect to Visualisation Scene
     // Comment the following part of code if using WEBGL
-    //private void Start()
-    //{
-    //    var args = System.Environment.GetCommandLineArgs();
-    //    var reader = new StreamReader(args[1]);
-    //    string vfg = reader.ReadLine();
-    //    reader.Close();
-    //    Debug.Log("vfg is:\n" + vfg);
-    //    Coordinator.PushParameters("Visualisation", vfg);
-    //    SceneManager.LoadScene("Visualisation");
-    //}
+#if UNITY_STANDALONE_LINUX
+    private void Start()
+    {
+        var args = System.Environment.GetCommandLineArgs();
+        var reader = new StreamReader(args[1]);
+        string vfg = reader.ReadLine();
+        reader.Close();
+        Debug.Log("vfg is:\n" + vfg);
+        Coordinator.PushParameters("Visualisation", vfg);
+        SceneManager.LoadScene("Visualisation");
+    }
+#endif
     // Comment the above part of code if using WEBGL
 
     private void Awake()

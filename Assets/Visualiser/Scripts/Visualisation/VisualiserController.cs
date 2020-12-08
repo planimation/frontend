@@ -114,7 +114,7 @@ namespace Visualiser
         bool waitReset;
         /** (May 17, 2020) Download Movie update **/
 
-        // (Sep 15, 2020 Zhaoqi Fang), if UNITY_STANDALONE
+// (Sep 15, 2020 Zhaoqi Fang), if UNITY_STANDALONE
         int framerate = 1;
         int shots = 1;
         bool renderFinished = false;
@@ -126,8 +126,10 @@ namespace Visualiser
             // Reads visualisation file data
 		try{
                 // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-                //System.IO.Directory.CreateDirectory("ScreenshotFolder");
-                //Time.captureFramerate = framerate;
+#if UNITY_STANDALONE_LINUX
+                System.IO.Directory.CreateDirectory("ScreenshotFolder");
+                Time.captureFramerate = framerate;
+#endif
                 // if UNITY_STANDALONE, above
                 var parameters = coordinator.FetchParameters("Visualisation") as string;
                 //Debug.Log("Parameters is:\n" + parameters);
@@ -168,12 +170,16 @@ namespace Visualiser
 	            RenderSteps();
 	            RenderFrame(visualStage);
                 // (Oct 12, 2020 Zhaoqi Fang) Update screenshot for initial state
-                //StartCoroutine(WaitRender());
+#if UNITY_STANDALONE_LINUX                
+                StartCoroutine(WaitRender());
+#endif
             }
             catch (Exception e){
                 //SceneManager.LoadScene("NetworkError");
                 // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-                //UnityEngine.Application.Quit();
+#if UNITY_STANDALONE_LINUX
+                UnityEngine.Application.Quit();
+#endif
                 // if UNITY_STANDALONE, above
             }
         }
@@ -251,7 +257,7 @@ namespace Visualiser
             }
         }
 
-        #region UI event handlers
+#region UI event handlers
         // UI event handler: Presents the contents of the final stage
         public void PresentFinalGoal()
         {
@@ -340,7 +346,7 @@ namespace Visualiser
             var newURL = "https://planning-visualisation-solver.herokuapp.com/help/";
             Application.OpenURL (newURL);
         }
-        #endregion
+#endregion
 
 
         // Unity built-in method, it will be fired in every frame
@@ -355,7 +361,9 @@ namespace Visualiser
                     Pause();
 
                     // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
-                    //UnityEngine.Application.Quit();
+#if UNITY_STANDALONE_LINUX
+                    UnityEngine.Application.Quit();
+#endif
                     // if UNITY_STANDALONE, above
                     /* (May 27, 2020) Movie download update */
                     if (this.filetype != null) 
@@ -385,9 +393,11 @@ namespace Visualiser
                 else
                 {
                     // (Oct 12, 2020 Zhaoqi Fang) if UNITY_STANDALONE, update screenshot
-                    //Pause();
-                    //StartCoroutine(UploadPNG());
-                    //Play();
+#if UNITY_STANDALONE_LINUX                    
+                    Pause();
+                    StartCoroutine(UploadPNG());
+                    Play();
+#endif
                     // if UNITY_STANDALONE, above
                     PresentNextStage();
                 }
@@ -451,7 +461,7 @@ namespace Visualiser
         }
         /** (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip **/
 
-        // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+// (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
         IEnumerator UploadPNG()
         {
             yield return new WaitForEndOfFrame();
@@ -482,7 +492,7 @@ namespace Visualiser
         }
         // if UNITY_STANDALONE, above
 
-        #region Stage Rendering
+#region Stage Rendering
         // Renders a frame if it is not null
         void TryRenderFrame(VisualStageObject visualStage)
         {
@@ -634,7 +644,7 @@ namespace Visualiser
                 controller.SetSubgoal(flag);
             }
         }
-        #endregion
+#endregion
 
         /* (May 17, 2020) Download Movie update */
         // activate download panel
