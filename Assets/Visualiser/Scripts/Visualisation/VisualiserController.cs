@@ -114,23 +114,21 @@ namespace Visualiser
         bool waitReset;
         /** (May 17, 2020) Download Movie update **/
 
-// (Sep 15, 2020 Zhaoqi Fang), if UNITY_STANDALONE
+        // (Sep 15, 2020 Zhaoqi Fang), the 3 parameters below are useful for linux build
         int framerate = 1;
         int shots = 1;
         bool renderFinished = false;
-        // if UNITY_STANDALONE, above
     
         // Intialization function 
         void Start()
         {
             // Reads visualisation file data
 		try{
-                // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+                // (Sep 15, 2020 Zhaoqi Fang)
 #if UNITY_STANDALONE_LINUX
                 System.IO.Directory.CreateDirectory("ScreenshotFolder");
                 Time.captureFramerate = framerate;
 #endif
-                // if UNITY_STANDALONE, above
                 var parameters = coordinator.FetchParameters("Visualisation") as string;
                 //Debug.Log("Parameters is:\n" + parameters);
             vf = parameters;
@@ -176,11 +174,10 @@ namespace Visualiser
             }
             catch (Exception e){
                 //SceneManager.LoadScene("NetworkError");
-                // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+                // (Sep 15, 2020 Zhaoqi Fang)
 #if UNITY_STANDALONE_LINUX
                 UnityEngine.Application.Quit();
 #endif
-                // if UNITY_STANDALONE, above
             }
         }
 
@@ -360,11 +357,10 @@ namespace Visualiser
                 {
                     Pause();
 
-                    // (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+                    // (Sep 15, 2020 Zhaoqi Fang)
 #if UNITY_STANDALONE_LINUX
                     UnityEngine.Application.Quit();
 #endif
-                    // if UNITY_STANDALONE, above
                     /* (May 27, 2020) Movie download update */
                     if (this.filetype != null) 
                     {
@@ -392,13 +388,12 @@ namespace Visualiser
                 }
                 else
                 {
-                    // (Oct 12, 2020 Zhaoqi Fang) if UNITY_STANDALONE, update screenshot
+                    // (Oct 12, 2020 Zhaoqi Fang) update screenshot for linux build
 #if UNITY_STANDALONE_LINUX                    
                     Pause();
                     StartCoroutine(UploadPNG());
                     Play();
 #endif
-                    // if UNITY_STANDALONE, above
                     PresentNextStage();
                 }
             }
@@ -461,7 +456,7 @@ namespace Visualiser
         }
         /** (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip **/
 
-// (Sep 15, 2020 Zhaoqi Fang) if UNITY_STANDALONE
+        // (Sep 15, 2020 Zhaoqi Fang)
         IEnumerator UploadPNG()
         {
             yield return new WaitForEndOfFrame();
@@ -490,7 +485,6 @@ namespace Visualiser
                 shots + ".png", bytes);
             shots++;
         }
-        // if UNITY_STANDALONE, above
 
 #region Stage Rendering
         // Renders a frame if it is not null
