@@ -32,11 +32,13 @@ This standalone is used for backend only. For frontend build, see [here]
 
 3. Choose Target Platform as ***Linux***, and Architecture as ***x86 + x86_64 (Universal)***
 
-4. Open the ***Player Setting***, make sure ***Display Resolution Dialog*** is selected as ***Disabled***
+4. Click ***Switch Platform***. This is important because Unity will precompile scripts and select the code that will be executed exclusively for linux build. If ***Switch Platform*** button is grayed out then the project is ready to be built.
 
-5. Build the standalone player inside a folder named ***linux_build*** and make sure the executable is named ***linux_standalone.x86***
+5. Open the ***Player Setting***, make sure ***Display Resolution Dialog*** is selected as ***Disabled***
 
-6. Place ***linux_build*** folder under the [backend](https://github.com/planimation/backend) ***backend/server*** and make ***linux_standalone.x86_64*** executable by doing
+6. Click ***Build*** and save the standalone player inside a folder named ***linux_build*** and make sure the executable is named ***linux_standalone.x86***
+
+7. Place ***linux_build*** folder inside [backend](https://github.com/planimation/backend) ***backend/server*** and make ***linux_standalone.x86_64*** executable by doing
 
     ```Shell
     sudo chmod +x linux_standalone.x86_64
