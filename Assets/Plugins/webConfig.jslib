@@ -12,7 +12,7 @@ mergeInto(LibraryManager.library, {
 //        }
 =======
         if (window.location.hostname != "planimation.planning.domain") {
-            api_url = "https://" + window.location.hostname + ":8000" + api_url;
+            api_url = "https://" + window.location.hostname + api_url;
         } else {
             api_url = api_url;
         }
