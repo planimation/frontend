@@ -5,7 +5,7 @@ mergeInto(LibraryManager.library, {
         var api_url = Pointer_stringify(api_url);
 
         if (window.location.hostname != "planimation.planning.domain") {
-            api_url = "http://" + window.location.hostname + ":8000" + api_url;
+            api_url = "https://" + window.location.hostname + ":8000" + api_url;
         } else {
             api_url = api_url;
         }
