@@ -20,6 +20,30 @@ Latest Development Build Status
 
 - Test the web server is running by visiting `localhost:8080` in the browser.
 
+## Build Unity Linux Standalone
+
+This standalone is used for backend only. For frontend build, see [here]
+
+### Steps
+
+1. Clone the frontend repository and open it in ***Unity 2018.2.10f1***
+
+2. Select Platform as ***PC, Mac & Linux Standalone***
+
+3. Choose Target Platform as ***Linux***, and Architecture as ***x86 + x86_64 (Universal)***
+
+4. Click ***Switch Platform***. This is important because Unity will precompile scripts and select the code that will be executed exclusively for linux build. If ***Switch Platform*** button is grayed out then the project is ready to be built.
+
+5. Open the ***Player Setting***, make sure ***Display Resolution Dialog*** is selected as ***Disabled***
+
+6. Click ***Build*** and save the standalone player inside a folder named ***linux_build*** and make sure the executable is named ***linux_standalone.x86***
+
+7. Place ***linux_build*** folder inside [backend](https://github.com/planimation/backend) ***backend/server*** and make ***linux_standalone.x86_64*** executable by doing
+
+    ```Shell
+    sudo chmod +x linux_standalone.x86_64
+    ```
+
 ## Contribution
 
 When contributing to this repository, please adhere to the below guidelines.
@@ -65,3 +89,6 @@ Before pushing the code to repo please make sure to:
 - Create a PR and add at least one peer reviewer.
 - You may merge your branch to `develop` once your PR is approved by your peer reviewer.
 - If you do not have permission to merge the PR, please contact the reviewer to merge it for you.
+
+[//]: #
+   [here]:<https://planimation.github.io/documentation/deployment_guide/>

@@ -27,7 +27,7 @@ public class ScenesCoordinator : MonoBehaviour
 {
     // External web config file (Sep 14, 2020)
     [DllImport("__Internal")]
-    private static extern string GetUploadApi();
+    private static extern string GetUploadApi(string api_url);
 
     public static ScenesCoordinator Coordinator;
     Dictionary<string, object> sceneParameters;
@@ -36,7 +36,24 @@ public class ScenesCoordinator : MonoBehaviour
     private string problemtxt;
     //" " means no plan has been uploaded
     private string plantxt=" ";
-    private string animationprofile;
+
+	private string animationprofile;
+
+    // £¨Sep 15 2020 Zhaoqi Fang)
+    // if UNITY_STANDALONE, get vfg from CLI, passi vfg and redirect to Visualisation Scene
+#if UNITY_STANDALONE_LINUX
+    private void Start()
+    {
+        var args = System.Environment.GetCommandLineArgs();
+        var reader = new StreamReader(args[1]);
+        string vfg = reader.ReadLine();
+        reader.Close();
+        Debug.Log("vfg is:\n" + vfg);
+        Coordinator.PushParameters("Visualisation", vfg);
+        SceneManager.LoadScene("Visualisation");
+    }
+#endif
+
     private void Awake()
     {
         if (Coordinator == null)
@@ -52,6 +69,28 @@ public class ScenesCoordinator : MonoBehaviour
     public object FetchParameters(string sceneName)
     {
         return sceneParameters[sceneName];
+    }
+
+    // £¨Sep 22, 2020 Zhaoqi Fang) check if parameters exists for file Download
+    public bool CheckParameters(string sceneName)
+    {
+        if (sceneParameters.ContainsKey(sceneName))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // (Sep 23, 2020 Zhaoqi Fang) remove parameters
+    public void RemoveParameters(string sceneName)
+    {
+        if (sceneParameters.ContainsKey(sceneName))
+        {
+            sceneParameters.Remove(sceneName);
+        }
     }
 
     // Adding the visualisation file to the visualiser scene
@@ -87,7 +126,11 @@ public class ScenesCoordinator : MonoBehaviour
         byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
         /* upload test for drag and drop function */
 
-        string port = GetUploadApi();
+        //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/upload/pddl", formData);
+	    //UnityWebRequest www = UnityWebRequest.Post("https://planning-visualisation-solver.herokuapp.com/upload/pddl", formData);
+        //UnityWebRequest www = UnityWebRequest.Post("/upload/pddl", formData);
+
+        string port = GetUploadApi("/upload/pddl");
         Debug.Log("testing the get upload api method" + port);
         UnityWebRequest www = UnityWebRequest.Post(port, formData);
 
@@ -98,12 +141,51 @@ public class ScenesCoordinator : MonoBehaviour
     	if(www.isNetworkError || www.isHttpError) {
             SceneManager.LoadScene("NetworkError");
             Debug.Log(www.error);
-    	}
-    	else {
-    		//Debug.Log("Form upload complete!");
-    		Coordinator.PushParameters ("Visualisation", www.downloadHandler.text);
-    		SceneManager.LoadScene ("Visualisation");
-    	}
+
+		}
+		else {
+			//Debug.Log("Form upload complete!");
+			Coordinator.PushParameters ("Visualisation", www.downloadHandler.text);
+			SceneManager.LoadScene ("Visualisation");
+		}
+	}
+    // (Sep 21, 2020 Zhaoqi Fang) send vfg and required file format to backend
+    public void SendDownloadRequest(string fileType)
+    {
+        StartCoroutine(GenerateDownloader(fileType));
+    }
+
+    IEnumerator GenerateDownloader(string fileType)
+    {
+        // generate a unique boundary
+        byte[] boundary = UnityWebRequest.GenerateBoundary();
+        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
+        string vfg = FetchParameters("Visualisation") as string;
+        formData.Add(new MultipartFormDataSection("vfg", vfg));
+        formData.Add(new MultipartFormDataSection("fileType", fileType));
+        // serialize form fileds into byte[] => requires a boundary to put in between fields
+        byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
+
+        //UnityWebRequest www = UnityWebRequest.Post("http://127.0.0.1:8000/downloadVisualisation", formData);
+        string port = GetUploadApi("/downloadVisualisation");
+        Debug.Log("testing the get api method" + port);
+        UnityWebRequest www = UnityWebRequest.Post(port, formData);
+
+        www.uploadHandler = new UploadHandlerRaw(formSections);
+        www.SetRequestHeader("Content-Type", "multipart/form-data; boundary=" + Encoding.UTF8.GetString(boundary));
+        yield return www.SendWebRequest();
+        // Showing error scene if vfg error or experiencing network error
+        if (www.isNetworkError || www.isHttpError)
+        {
+            SceneManager.LoadScene("NetworkError");
+            Debug.Log(www.error);
+        }
+        else
+        {  
+            Coordinator.PushParameters("DownloadPlanimation", www.downloadHandler.data);
+            
+            
+        }
     }
 
     // Storing the doamin file in the coordinator

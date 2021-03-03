@@ -59,11 +59,18 @@ namespace Visualiser
         private static extern void OutputGIF();
 
         [DllImport("__Internal")]
+        private static extern void OutputPNG();
+
+        [DllImport("__Internal")]
         private static extern void OutputWebM();
 
         [DllImport("__Internal")]
         private static extern void OutputMP4();
         /** (May 17, 2020) Download Movie update **/
+
+        // (Sep 22, 2020 Zhaoqi Fang) Download File
+        [DllImport("__Internal")]
+        private static extern void ZipDownload(string data, string filename, string filetype);
 
         // Static readonly fileds
         readonly static Color SubgoalImplementedColor = new Color(0f, 0.66666667f, 0.10980392f);
@@ -106,14 +113,24 @@ namespace Visualiser
         string filetype;
         bool waitReset;
         /** (May 17, 2020) Download Movie update **/
-        
-        
+
+        // (Sep 15, 2020 Zhaoqi Fang), the 3 parameters below are useful for linux build
+        int framerate = 1;
+        int shots = 1;
+        bool renderFinished = false;
+    
         // Intialization function 
         void Start()
         {
             // Reads visualisation file data
 		try{
-            var parameters = coordinator.FetchParameters("Visualisation") as string;
+                // (Sep 15, 2020 Zhaoqi Fang)
+#if UNITY_STANDALONE_LINUX
+                System.IO.Directory.CreateDirectory("ScreenshotFolder");
+                Time.captureFramerate = framerate;
+#endif
+                var parameters = coordinator.FetchParameters("Visualisation") as string;
+                //Debug.Log("Parameters is:\n" + parameters);
             vf = parameters;
             // Creates a visual solution
             visualSolution = JsonUtility.FromJson<VisualSolutionObject>(parameters);
@@ -150,11 +167,26 @@ namespace Visualiser
 	            RenderSubgoals();
 	            RenderSteps();
 	            RenderFrame(visualStage);
-			}catch (Exception e){
-				//SceneManager.LoadScene("NetworkError");
-			}
+                // (Oct 12, 2020 Zhaoqi Fang) Update screenshot for initial state
+#if UNITY_STANDALONE_LINUX                
+                StartCoroutine(WaitRender());
+#endif
+            }
+            catch (Exception e){
+                //SceneManager.LoadScene("NetworkError");
+                // (Sep 15, 2020 Zhaoqi Fang)
+#if UNITY_STANDALONE_LINUX
+                UnityEngine.Application.Quit();
+#endif
+            }
         }
 
+        IEnumerator WaitRender()
+        {
+            yield return new WaitUntil(() => renderFinished == true);
+            StartCoroutine(UploadPNG());
+            Play();
+        }
 
         // This function is used to render subgoals from the solutionobject
         public void RenderSubgoals()
@@ -222,7 +254,7 @@ namespace Visualiser
             }
         }
 
-        #region UI event handlers
+#region UI event handlers
         // UI event handler: Presents the contents of the final stage
         public void PresentFinalGoal()
         {
@@ -311,7 +343,7 @@ namespace Visualiser
             var newURL = "https://planning-visualisation-solver.herokuapp.com/help/";
             Application.OpenURL (newURL);
         }
-        #endregion
+#endregion
 
 
         // Unity built-in method, it will be fired in every frame
@@ -319,21 +351,29 @@ namespace Visualiser
         {   
             // Plays animation
             if (playing && AreAllAnimationsFinished())
-            {   
-                
+            {
                 //Debug.Log("captured?  " + name);
-
                 if (visualSolution.IsFinalStage())
                 {
                     Pause();
-                    
+
+                    // (Sep 15, 2020 Zhaoqi Fang)
+#if UNITY_STANDALONE_LINUX
+                    UnityEngine.Application.Quit();
+#endif
                     /* (May 27, 2020) Movie download update */
-                    if(this.filetype != null) 
+                    if (this.filetype != null) 
                     {
                         if(this.filetype == "gif") 
                         {
                             OutputGIF();
-                        } 
+                        }
+                        //Added by Mengyi Fan
+                        else if(this.filetype == "png")
+                        {
+                            OutputPNG();
+                        }
+
                         else if(this.filetype == "webm")
                         {
                             OutputWebM();
@@ -348,6 +388,12 @@ namespace Visualiser
                 }
                 else
                 {
+                    // (Oct 12, 2020 Zhaoqi Fang) update screenshot for linux build
+#if UNITY_STANDALONE_LINUX                    
+                    Pause();
+                    StartCoroutine(UploadPNG());
+                    Play();
+#endif
                     PresentNextStage();
                 }
             }
@@ -376,7 +422,71 @@ namespace Visualiser
             /** (May 27, 2020) Movie download update **/
         }
 
-        #region Stage Rendering
+        /* (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip */
+        public void DownloadPNG(string filetype)
+        {
+            this.filetype = filetype;
+            coordinator.SendDownloadRequest(this.filetype);
+            StartCoroutine(WaitAndGetResponse());
+
+        }
+
+        IEnumerator WaitAndGetResponse()
+        {
+            //yield return new WaitForSecondsRealtime(5);
+            yield return new WaitUntil(() => coordinator.CheckParameters("DownloadPlanimation") == true);
+            byte[] data = coordinator.FetchParameters("DownloadPlanimation") as byte[];
+            string filename;
+            if(filetype == "png")
+            {
+                filename = "planimation.zip";
+            }
+            else
+            {
+                filename = "planimation." + filetype;
+            }
+            ZipDownload(System.Convert.ToBase64String(data), filename, filetype);
+            DownloadPanelFull.SetActive(false);
+            DownloadPanelVFG.SetActive(false);
+            coordinator.RemoveParameters("DownloadPlanimation");
+
+            // close downloading object after download finished
+            GameObject.Find("ImageDownload").SetActive(false);
+
+        }
+        /** (Sep 22, 2020 Zhaoqi Fang) Download Function call for PNG in zip **/
+
+        // (Sep 15, 2020 Zhaoqi Fang)
+        IEnumerator UploadPNG()
+        {
+            yield return new WaitForEndOfFrame();
+            int width = Screen.width;
+            int height = Screen.height;
+
+            // get camer for capture at "headless" mode
+            //var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+            //var renderTexture = new RenderTexture(width, height, 24);
+            //cam.targetTexture = renderTexture;
+            //cam.Render();
+            //cam.targetTexture = null;
+
+            //RenderTexture.active = renderTexture;
+            var tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+
+            tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+            tex.Apply();
+            //RenderTexture.active = null;
+
+            // Encode texture into PNG
+            byte[] bytes = tex.EncodeToPNG();
+            Destroy(tex);
+
+            System.IO.File.WriteAllBytes("ScreenshotFolder/shot" +
+                shots + ".png", bytes);
+            shots++;
+        }
+
+#region Stage Rendering
         // Renders a frame if it is not null
         void TryRenderFrame(VisualStageObject visualStage)
         {
@@ -403,6 +513,8 @@ namespace Visualiser
             // Update visual sprites.
             // Including create, update, remove visual sprites and manage subgoal status
             UpdateVisualSprites(visualStage, subgoalObjectNames);
+            // if unity_standalone
+            renderFinished = true;
         }
 
         // Update buttons highlighting status
@@ -526,7 +638,7 @@ namespace Visualiser
                 controller.SetSubgoal(flag);
             }
         }
-        #endregion
+#endregion
 
         /* (May 17, 2020) Download Movie update */
         // activate download panel
