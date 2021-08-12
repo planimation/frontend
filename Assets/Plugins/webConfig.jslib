@@ -9,7 +9,6 @@ mergeInto(LibraryManager.library, {
         } else {
             api_url = api_url;
         }
-
         var bufferSize = lengthBytesUTF8(api_url) + 1
         var buffer = _malloc(bufferSize);
         stringToUTF8(api_url, buffer, bufferSize)
