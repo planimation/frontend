@@ -39,7 +39,7 @@ public class ScenesCoordinator : MonoBehaviour
 
 	private string animationprofile;
 
-    // £¨Sep 15 2020 Zhaoqi Fang)
+    // (Sep 15 2020 Zhaoqi Fang)
     // if UNITY_STANDALONE, get vfg from CLI, passi vfg and redirect to Visualisation Scene
 #if UNITY_STANDALONE_LINUX
     private void Start()
@@ -71,7 +71,7 @@ public class ScenesCoordinator : MonoBehaviour
         return sceneParameters[sceneName];
     }
 
-    // £¨Sep 22, 2020 Zhaoqi Fang) check if parameters exists for file Download
+    //(Sep 22, 2020 Zhaoqi Fang) check if parameters exists for file Download
     public bool CheckParameters(string sceneName)
     {
         if (sceneParameters.ContainsKey(sceneName))
@@ -84,7 +84,7 @@ public class ScenesCoordinator : MonoBehaviour
         }
     }
 
-    // (Sep 23, 2020 Zhaoqi Fang) remove parameters
+    //(Sep 23, 2020 Zhaoqi Fang) remove parameters
     public void RemoveParameters(string sceneName)
     {
         if (sceneParameters.ContainsKey(sceneName))
